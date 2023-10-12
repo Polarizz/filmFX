@@ -21,7 +21,7 @@ struct Timeline: View {
     let maxScale: CGFloat = 1.0
 
     var body: some View {
-        VStack(spacing: 10) {
+        VStack(alignment: .leading, spacing: currentSpacing) {
             RoundedRectangle(cornerRadius: currentRadius)
                 .fill(.yellow)
                 .frame(width: (frameWidth * 3) + (frameSpacing * 2), height: currentTimelineHeight)
@@ -37,11 +37,47 @@ struct Timeline: View {
                                 .fill(.black.opacity(0.39))
 
                             HStack(spacing: 7) {
-                                Image(systemName: "circle.rectangle.filled.pattern.diagonalline")
+                                Image(systemName: "circle.dotted.circle")
                                     .font(.body.weight(.medium))
                                     .symbolRenderingMode(.hierarchical)
 
                                 Text("Vignette")
+                                    .font(.subheadline.weight(.medium))
+                            }
+                            .padding(.horizontal, 10)
+                            .scaleEffect(currentTextSize, anchor: .leading)
+                        }
+                        .padding(.vertical, currentTimelineVerticalPadding)
+                        .padding(.horizontal, currentTimelineHorizontalPadding)
+
+                        Image(systemName: "chevron.compact.right")
+                            .scaleEffect(currentTextSize)
+                    }
+                    .font(.title3.weight(.semibold))
+                    .foregroundColor(.black)
+                    .padding(.horizontal, currentTimelineHorizontalPadding)
+                )
+
+            RoundedRectangle(cornerRadius: currentRadius)
+                .fill(.yellow)
+                .frame(width: (frameWidth * 2) + (frameSpacing * 1), height: currentTimelineHeight)
+                .animation(.smooth(duration: 0.3), value: gestureManager.offsetX != 0)
+                .animation(.smooth(duration: 0.3), value: gestureManager.scale != 0.3 || gestureManager.scale != 1)
+                .overlay(
+                    HStack(spacing: 0) {
+                        Image(systemName: "chevron.compact.left")
+                            .scaleEffect(currentTextSize)
+
+                        ZStack(alignment: .leading) {
+                            RoundedRectangle(cornerRadius: currentRadius - currentTimelineVerticalPadding)
+                                .fill(.black.opacity(0.39))
+
+                            HStack(spacing: 7) {
+                                Image(systemName: "plusminus.circle")
+                                    .font(.body.weight(.medium))
+                                    .symbolRenderingMode(.hierarchical)
+
+                                Text("Exposure")
                                     .font(.subheadline.weight(.medium))
                             }
                             .padding(.horizontal, 10)
@@ -73,11 +109,11 @@ struct Timeline: View {
                                 .fill(.black.opacity(0.39))
 
                             HStack(spacing: 7) {
-                                Image(systemName: "circle.rectangle.filled.pattern.diagonalline")
+                                Image(systemName: "circle.righthalf.filled")
                                     .font(.body.weight(.medium))
                                     .symbolRenderingMode(.hierarchical)
 
-                                Text("Vignette")
+                                Text("Contrast")
                                     .font(.subheadline.weight(.medium))
                             }
                             .padding(.horizontal, 10)
@@ -110,7 +146,7 @@ struct Timeline: View {
     }
 
     var currentTimelineHeight: CGFloat {
-        interpolatedValue(for: gestureManager.scale, minVal: 40, maxVal: 130)
+        interpolatedValue(for: gestureManager.scale, minVal: 40, maxVal: 135)
     }
 
     var currentTimelineHorizontalPadding: CGFloat {
@@ -118,7 +154,7 @@ struct Timeline: View {
     }
 
     var currentTimelineVerticalPadding: CGFloat {
-        interpolatedValue(for: gestureManager.scale, minVal: 2, maxVal: 6)
+        interpolatedValue(for: gestureManager.scale, minVal: 2, maxVal: 6.5)
     }
 
     var currentTextSize: CGFloat {
@@ -126,6 +162,10 @@ struct Timeline: View {
     }
 
     var currentRadius: CGFloat {
-        interpolatedValue(for: gestureManager.scale, minVal: 7, maxVal: 21)
+        interpolatedValue(for: gestureManager.scale, minVal: 7, maxVal: 22)
+    }
+
+    var currentSpacing: CGFloat {
+        interpolatedValue(for: gestureManager.scale, minVal: 3, maxVal: 10)
     }
 }
