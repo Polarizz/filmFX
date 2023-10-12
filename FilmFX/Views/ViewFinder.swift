@@ -230,6 +230,16 @@ struct ZoomAndPanView<Content: View>: UIViewRepresentable {
 
             hostingView.frame = contentsFrame
         }
+
+        @objc func handleDoubleTap(_ recognizer: UITapGestureRecognizer) {
+            let scrollView = recognizer.view as! UIScrollView
+
+            if scrollView.zoomScale == 1.0 {
+                scrollView.setZoomScale(0.3, animated: true)
+            } else {
+                scrollView.setZoomScale(1.0, animated: true)
+            }
+        }
     }
 
     func makeUIView(context: Context) -> UIScrollView {
@@ -261,6 +271,10 @@ struct ZoomAndPanView<Content: View>: UIViewRepresentable {
         scrollView.contentSize = containerView.frame.size
 
         context.coordinator.hostingView = containerView
+
+        let doubleTapRecognizer = UITapGestureRecognizer(target: context.coordinator, action: #selector(Coordinator.handleDoubleTap(_:)))
+        doubleTapRecognizer.numberOfTapsRequired = 2
+        scrollView.addGestureRecognizer(doubleTapRecognizer)
 
         return scrollView
     }
