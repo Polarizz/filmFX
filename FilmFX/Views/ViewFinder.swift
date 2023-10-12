@@ -34,41 +34,29 @@ struct ViewFinder: View {
     var body: some View {
         ZoomAndPanView(totalFrames: CGFloat(totalFrames), frameSpacing: frameSpacing, zoomScale: zoomScale, pageModel: pageModel) {
             HStack(spacing: frameSpacing) {
-                ForEach(0..<totalFrames, id: \.self) { frameIndex in
-                    Button(action: {
-                        handleTap(for: frameIndex)
-
-                        print(selectedFrames, frameIndex)
-                    }) {
-                        RoundedRectangle(cornerRadius: currentCornerRadius)
-                            .fill(Color.white.opacity(0.1))
-                            .overlay(
-                                RoundedRectangle(cornerRadius: currentCornerRadius)
-                                    .strokeBorder(selectedFrames.contains(frameIndex) ? .yellow : .secondary, lineWidth: selectedFrames.contains(frameIndex) ? currentLineWidth : 1)
-                            )
-                            .animation(.smooth(duration: 0.3), value: zoomScale.scale)
+                ForEach(0..<totalFrames, id: \.self) { index in
+                    RoundedRectangleView(zoomScale: zoomScale, isSelected: selectedFrames.contains(index)) {
+                        handleTap(for: index)
                     }
-
-                    .frame(width: frameWidth, height: frameWidth * (9/16))
                 }
             }
             .offset(y: -40)
         }
         .ignoresSafeArea(.container)
         .background(.black)
-//        .overlay(
-//            Text("^[\(selectedFrames) FRAME](inflect: true) SELECTED")
-//                .font(.footnote.weight(.medium))
-//                .foregroundColor(.black)
-//                .padding(.vertical, 5)
-//                .padding(.horizontal, 7)
-//                .background(.yellow)
-//                .clipShape(RoundedRectangle(cornerRadius: 5, style: .continuous))
-//                .transformEffect(.identity)
-//                .padding(16)
-//                .opacity(selectedFrames > 0 ? 1 : 0)
-//            , alignment: .top
-//        )
+        .overlay(
+            Text("^[\(selectedFrames.count) FRAME](inflect: true) SELECTED")
+                .font(.footnote.weight(.medium))
+                .foregroundColor(.black)
+                .padding(.vertical, 5)
+                .padding(.horizontal, 7)
+                .background(.yellow)
+                .clipShape(RoundedRectangle(cornerRadius: 5, style: .continuous))
+                .transformEffect(.identity)
+                .padding(16)
+                .opacity(selectedFrames.count > 0 ? 1 : 0)
+            , alignment: .top
+        )
     }
 
     private func handleTap(for index: Int) {
@@ -84,7 +72,30 @@ struct ViewFinder: View {
             selectedFrames.insert(index)
         }
     }
+}
 
+struct RoundedRectangleView: View {
+
+    @ObservedObject var zoomScale: ZoomScale
+
+    let maxCornerRadius: CGFloat = 19
+    let maxLineWidth: CGFloat = 3
+
+    var isSelected: Bool
+    var onTap: () -> Void
+
+    var body: some View {
+        RoundedRectangle(cornerRadius: currentCornerRadius)
+            .fill(Color.white.opacity(0.1))
+            .overlay(
+                RoundedRectangle(cornerRadius: currentCornerRadius)
+                    .strokeBorder(isSelected ? .yellow : .secondary, lineWidth: isSelected ? currentLineWidth : 1)
+            )
+            .animation(.smooth(duration: 0.3), value: zoomScale.scale)
+            .onTapGesture {
+                withAnimation(.smooth(duration: 0.3)) { onTap() }
+            }
+    }
 
     private var currentCornerRadius: CGFloat {
         let minScale: CGFloat = 0.3
@@ -107,6 +118,7 @@ struct ViewFinder: View {
         return lineWidth
     }
 }
+
 
 struct ZoomAndPanView<Content: View>: UIViewRepresentable {
 
@@ -253,5 +265,13 @@ struct ZoomAndPanView<Content: View>: UIViewRepresentable {
         return scrollView
     }
 
-    func updateUIView(_ uiView: UIScrollView, context: Context) {}
+    func updateUIView(_ uiView: UIScrollView, context: Context) {
+        let hostView = UIHostingController(rootView: content)
+
+        hostView.view.frame = context.coordinator.hostingView.bounds
+        hostView.view.backgroundColor = .clear
+
+        context.coordinator.hostingView.subviews.forEach { $0.removeFromSuperview() }
+        context.coordinator.hostingView.addSubview(hostView.view)
+    }
 }
