@@ -25,7 +25,7 @@ struct ViewFinder: View {
 
     let frameWidth: CGFloat = UIScreen.main.bounds.maxX
     let totalFrames: Int = 20
-    let frameSpacing: CGFloat = 5
+    let frameSpacing: CGFloat = 7
 
     var body: some View {
         ZoomAndPanView(totalFrames: CGFloat(totalFrames), frameSpacing: frameSpacing, zoomScale: zoomScale, pageModel: pageModel) {
@@ -38,15 +38,7 @@ struct ViewFinder: View {
             .offset(y: -40)
         }
         .ignoresSafeArea(.container)
-        .overlay(
-            Text(String(frameSpacing * CGFloat(pageModel.currentPage)))
-                .foregroundColor(.white)
-                .padding()
-                .background(Color.black.opacity(0.7))
-                .cornerRadius(10)
-                .padding(),
-            alignment: .top
-        )
+        .background(.black)
     }
 }
 
@@ -202,34 +194,51 @@ struct RoundedRectangleView: View {
 
     @ObservedObject var zoomScale: ZoomScale
 
+    @State var selected = false
+
     let maxCornerRadius: CGFloat = 19
+    let maxLineWidth: CGFloat = 3
 
     var body: some View {
         RoundedRectangle(cornerRadius: currentCornerRadius)
-            .fill(Color.blue)
+            .fill(Color.white.opacity(0.1))
             .overlay(
                 RoundedRectangle(cornerRadius: currentCornerRadius)
-                    .strokeBorder(Color.black, lineWidth: 1)
+                    .strokeBorder(selected ? .yellow : .secondary, lineWidth: selected ? currentLineWidth : 1)
             )
             .animation(.smooth(duration: 0.3), value: zoomScale.scale)
+            .onTapGesture {
+                withAnimation(.smooth(duration: 0.3)) {
+                    selected.toggle()
+                }
+            }
     }
 
     private var currentCornerRadius: CGFloat {
-        // We need to calculate a linear interpolation between 0 and maxCornerRadius
-        // based on the zoom scale which varies between 0.39 and 1
-
         let minScale: CGFloat = 0.39
         let maxScale: CGFloat = 1.0
 
-        // Normalizing the zoom scale to a 0-1 range
         let normalizedScale = (zoomScale.scale - minScale) / (maxScale - minScale)
-
-        // Inverting the normalized scale to decrease the corner radius as zoom scale increases
         let invertedScale = 1 - normalizedScale
-
-        // Calculating the interpolated corner radius
         let cornerRadius = invertedScale * maxCornerRadius
 
         return cornerRadius
+    }
+
+    private var currentLineWidth: CGFloat {
+        let minScale: CGFloat = 0.39
+        let maxScale: CGFloat = 1.0
+
+        // Assuming zoomScale.scale is defined and is in the range [minScale, maxScale]
+        // Clamp the value to be sure it's within the expected range.
+        let clampedScale = max(minScale, min(zoomScale.scale, maxScale))
+
+        // Coefficients derived from the two points provided (zoomScale.scale, lineWidth): (1, 1) and (0.39, 3)
+        let m: CGFloat = -3.28
+        let b: CGFloat = 4.28
+
+        let lineWidth = m * clampedScale + b
+
+        return lineWidth
     }
 }
