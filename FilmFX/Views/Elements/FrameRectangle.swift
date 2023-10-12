@@ -41,7 +41,7 @@ struct FrameRectangle: View {
             .fill(Color.white.opacity(0.1))
             .overlay(
                 RoundedRectangle(cornerRadius: currentCornerRadius)
-                    .strokeBorder(isSelected ? .yellow : .secondary, lineWidth: isSelected ? currentLineWidth : 1)
+                    .strokeBorder(isSelected ? .yellow : .gray.opacity(0.2), lineWidth: isSelected ? currentLineWidth : currentLineWidth/2)
             )
             .frame(width: frameWidth, height: frameWidth * (9/16))
             .animation(.smooth(duration: 0.3), value: zoomScale.scale)

@@ -28,7 +28,7 @@ struct ViewFinder: View {
     @StateObject private var dragState = DragState()
 
     let frameWidth: CGFloat = UIScreen.main.bounds.maxX
-    let totalFrames: Int = 50
+    let totalFrames: Int = 30
     let maxCornerRadius: CGFloat = 19
     let maxLineWidth: CGFloat = 3
     let minScale: CGFloat = 0.3
