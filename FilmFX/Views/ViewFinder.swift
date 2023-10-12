@@ -25,17 +25,29 @@ struct ViewFinder: View {
 
     let frameWidth: CGFloat = UIScreen.main.bounds.maxX
     let totalFrames: Int = 20
-    let frameSpacing: CGFloat = 7
     let maxCornerRadius: CGFloat = 19
     let maxLineWidth: CGFloat = 3
+    let minScale: CGFloat = 0.3
+    let maxScale: CGFloat = 1.0
+
+    func interpolatedValue(for scale: CGFloat, minVal: CGFloat, maxVal: CGFloat) -> CGFloat {
+        let clampedScale = max(minScale, min(zoomScale.scale, maxScale))
+        let normalizedScale = (clampedScale - minScale) / (maxScale - minScale)
+        let invertedScale = 1 - normalizedScale
+        return minVal + invertedScale * (maxVal - minVal)
+    }
+
+    var frameSpacing: CGFloat {
+        interpolatedValue(for: zoomScale.scale, minVal: 7, maxVal: 13)
+    }
 
     @State var selectedFrames = Set<Int>()
 
     var body: some View {
         ZoomAndPanView(totalFrames: CGFloat(totalFrames), frameSpacing: frameSpacing, zoomScale: zoomScale, pageModel: pageModel) {
-            HStack(spacing: frameSpacing) {
+            HStack(alignment: .top, spacing: frameSpacing) {
                 ForEach(0..<totalFrames, id: \.self) { index in
-                    RoundedRectangleView(zoomScale: zoomScale, isSelected: selectedFrames.contains(index)) {
+                    RoundedRectangleView(zoomScale: zoomScale, number: index + 1, frameWidth: frameWidth, isSelected: selectedFrames.contains(index)) {
                         handleTap(for: index)
                     }
                 }
@@ -80,42 +92,66 @@ struct RoundedRectangleView: View {
 
     let maxCornerRadius: CGFloat = 19
     let maxLineWidth: CGFloat = 3
+    let minScale: CGFloat = 0.3
+    let maxScale: CGFloat = 1.0
 
+    var number: Int
+    var frameWidth: CGFloat
     var isSelected: Bool
     var onTap: () -> Void
 
     var body: some View {
+        rect
+            .overlay(
+                VStack(alignment: .leading, spacing: currentSpacing) {
+                    rect.opacity(0)
+
+                    Text(String(number))
+                        .font(.system(size: currentFontSize))
+                        .foregroundColor(isSelected ? .yellow : .secondary)
+                        .animation(.smooth(duration: 0.3), value: zoomScale.scale)
+                        .padding(.horizontal, 3)
+                }
+            )
+    }
+
+    var rect: some View {
         RoundedRectangle(cornerRadius: currentCornerRadius)
             .fill(Color.white.opacity(0.1))
             .overlay(
                 RoundedRectangle(cornerRadius: currentCornerRadius)
                     .strokeBorder(isSelected ? .yellow : .secondary, lineWidth: isSelected ? currentLineWidth : 1)
             )
+            .frame(width: frameWidth, height: frameWidth * (9/16))
             .animation(.smooth(duration: 0.3), value: zoomScale.scale)
             .onTapGesture {
                 withAnimation(.smooth(duration: 0.3)) { onTap() }
             }
     }
 
-    private var currentCornerRadius: CGFloat {
-        let minScale: CGFloat = 0.3
-        let maxScale: CGFloat = 1.0
-        let normalizedScale = (zoomScale.scale - minScale) / (maxScale - minScale)
+    func interpolatedValue(for scale: CGFloat, minVal: CGFloat, maxVal: CGFloat) -> CGFloat {
+        let clampedScale = max(minScale, min(zoomScale.scale, maxScale))
+        let normalizedScale = (clampedScale - minScale) / (maxScale - minScale)
         let invertedScale = 1 - normalizedScale
-        let cornerRadius = invertedScale * maxCornerRadius
-
-        return cornerRadius
+        return minVal + invertedScale * (maxVal - minVal)
     }
 
-    private var currentLineWidth: CGFloat {
-        let minScale: CGFloat = 0.3
-        let maxScale: CGFloat = 1.0
-        let clampedScale = max(minScale, min(zoomScale.scale, maxScale))
+    var currentCornerRadius: CGFloat {
+        interpolatedValue(for: zoomScale.scale, minVal: 0, maxVal: maxCornerRadius)
+    }
+
+    var currentLineWidth: CGFloat {
         let m: CGFloat = -2.86
         let b: CGFloat = 3.86
-        let lineWidth = m * clampedScale + b
+        return m * zoomScale.scale + b
+    }
 
-        return lineWidth
+    var currentFontSize: CGFloat {
+        interpolatedValue(for: zoomScale.scale, minVal: 16, maxVal: 43)
+    }
+
+    var currentSpacing: CGFloat {
+        interpolatedValue(for: zoomScale.scale, minVal: 30, maxVal: 70)
     }
 }
 
