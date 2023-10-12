@@ -16,12 +16,17 @@ class ZoomScale: ObservableObject {
     @Published var scale: CGFloat = 1.0
 }
 
+class DragState: ObservableObject {
+    @Published var isDragging: Bool = false
+}
+
 struct ViewFinder: View {
 
     @Environment(\.safeAreaInsets) var safeAreaInsets
 
     @StateObject private var zoomScale = ZoomScale()
     @StateObject private var pageModel = PageModel()
+    @StateObject private var dragState = DragState()
 
     let frameWidth: CGFloat = UIScreen.main.bounds.maxX
     let totalFrames: Int = 20
@@ -29,22 +34,12 @@ struct ViewFinder: View {
     let maxLineWidth: CGFloat = 3
     let minScale: CGFloat = 0.3
     let maxScale: CGFloat = 1.0
-
-    func interpolatedValue(for scale: CGFloat, minVal: CGFloat, maxVal: CGFloat) -> CGFloat {
-        let clampedScale = max(minScale, min(zoomScale.scale, maxScale))
-        let normalizedScale = (clampedScale - minScale) / (maxScale - minScale)
-        let invertedScale = 1 - normalizedScale
-        return minVal + invertedScale * (maxVal - minVal)
-    }
-
-    var frameSpacing: CGFloat {
-        interpolatedValue(for: zoomScale.scale, minVal: 7, maxVal: 13)
-    }
+    let frameSpacing: CGFloat = 9
 
     @State var selectedFrames = Set<Int>()
 
     var body: some View {
-        ZoomAndPanView(totalFrames: CGFloat(totalFrames), frameSpacing: frameSpacing, zoomScale: zoomScale, pageModel: pageModel) {
+        ZoomAndPanView(totalFrames: CGFloat(totalFrames), frameSpacing: frameSpacing, zoomScale: zoomScale, pageModel: pageModel, dragState: dragState) {
             HStack(alignment: .top, spacing: frameSpacing) {
                 ForEach(0..<totalFrames, id: \.self) { index in
                     RoundedRectangleView(zoomScale: zoomScale, number: index + 1, frameWidth: frameWidth, isSelected: selectedFrames.contains(index)) {
@@ -57,16 +52,29 @@ struct ViewFinder: View {
         .ignoresSafeArea(.container)
         .background(.black)
         .overlay(
-            Text("^[\(selectedFrames.count) FRAME](inflect: true) SELECTED")
-                .font(.footnote.weight(.medium))
-                .foregroundColor(.black)
-                .padding(.vertical, 5)
-                .padding(.horizontal, 7)
-                .background(.yellow)
-                .clipShape(RoundedRectangle(cornerRadius: 5, style: .continuous))
-                .transformEffect(.identity)
-                .padding(16)
-                .opacity(selectedFrames.count > 0 ? 1 : 0)
+            VStack(spacing: 9) {
+                if selectedFrames.count > 0 {
+                    Text("^[\(selectedFrames.count) FRAME](inflect: true) SELECTED")
+                        .font(.footnote.weight(.medium))
+                        .foregroundColor(.black)
+                        .padding(.vertical, 5)
+                        .padding(.horizontal, 7)
+                        .background(.yellow)
+                        .clipShape(RoundedRectangle(cornerRadius: 5, style: .continuous))
+                }
+
+                if dragState.isDragging {
+                    Text("00:10.39")
+                        .font(.subheadline.weight(.medium))
+                        .foregroundColor(.white)
+                        .padding(.vertical, 5)
+                        .padding(.horizontal, 7)
+                        .background(.gray.opacity(0.3))
+                        .clipShape(RoundedRectangle(cornerRadius: 5, style: .continuous))
+                }
+            }
+            .padding(16)
+            .animation(.smooth(duration: 0.3), value: dragState.isDragging)
             , alignment: .top
         )
     }
@@ -108,9 +116,9 @@ struct RoundedRectangleView: View {
 
                     Text(String(number))
                         .font(.system(size: currentFontSize))
-                        .foregroundColor(isSelected ? .yellow : .secondary)
+                        .foregroundColor(isSelected ? .yellow : .gray.opacity(0.5))
                         .animation(.smooth(duration: 0.3), value: zoomScale.scale)
-                        .padding(.horizontal, 3)
+                        .padding(.horizontal, currentLeadingPadding)
                 }
             )
     }
@@ -153,6 +161,10 @@ struct RoundedRectangleView: View {
     var currentSpacing: CGFloat {
         interpolatedValue(for: zoomScale.scale, minVal: 30, maxVal: 70)
     }
+
+    var currentLeadingPadding: CGFloat {
+        interpolatedValue(for: zoomScale.scale, minVal: 5, maxVal: 3)
+    }
 }
 
 
@@ -160,23 +172,26 @@ struct ZoomAndPanView<Content: View>: UIViewRepresentable {
 
     @ObservedObject var zoomScale: ZoomScale
     @ObservedObject var pageModel: PageModel
+    @ObservedObject var dragState: DragState
 
     let frameWidth: CGFloat
     let totalFrames: CGFloat
     let frameSpacing: CGFloat
     var content: Content
 
-    init(totalFrames: CGFloat, frameSpacing: CGFloat, zoomScale: ZoomScale, pageModel: PageModel, @ViewBuilder content: () -> Content) {
+    init(totalFrames: CGFloat, frameSpacing: CGFloat, zoomScale: ZoomScale, pageModel: PageModel, dragState: DragState, @ViewBuilder content: () -> Content) {
         self.totalFrames = totalFrames
         self.frameSpacing = frameSpacing
         self.zoomScale = zoomScale
         self.pageModel = pageModel
+        self.dragState = dragState
         self.content = content()
         self.frameWidth = UIScreen.main.bounds.width
     }
 
+
     func makeCoordinator() -> Coordinator {
-        return Coordinator(zoomScale: zoomScale, frameWidth: frameWidth, totalFrames: totalFrames, frameSpacing: frameSpacing, pageModel: pageModel)
+        return Coordinator(zoomScale: zoomScale, frameWidth: frameWidth, totalFrames: totalFrames, frameSpacing: frameSpacing, pageModel: pageModel, dragState: dragState)
     }
 
     class Coordinator: NSObject, UIScrollViewDelegate {
@@ -185,14 +200,16 @@ struct ZoomAndPanView<Content: View>: UIViewRepresentable {
         var frameWidth: CGFloat
         var totalFrames: CGFloat
         var frameSpacing: CGFloat
-        var pageModel: PageModel // New property for page tracking
+        var pageModel: PageModel
+        var dragState: DragState
 
-        init(zoomScale: ZoomScale, frameWidth: CGFloat, totalFrames: CGFloat, frameSpacing: CGFloat, pageModel: PageModel) {
+        init(zoomScale: ZoomScale, frameWidth: CGFloat, totalFrames: CGFloat, frameSpacing: CGFloat, pageModel: PageModel, dragState: DragState) {
             self.zoomScale = zoomScale
             self.frameWidth = frameWidth
             self.totalFrames = totalFrames
             self.frameSpacing = frameSpacing
-            self.pageModel = pageModel // Initialize pageModel
+            self.pageModel = pageModel
+            self.dragState = dragState
         }
 
         func viewForZooming(in scrollView: UIScrollView) -> UIView? {
@@ -247,6 +264,23 @@ struct ZoomAndPanView<Content: View>: UIViewRepresentable {
                 }
             )
         }
+
+        func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+            dragState.isDragging = true
+        }
+
+        func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                self.dragState.isDragging = false
+            }
+        }
+
+        func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                self.dragState.isDragging = false
+            }
+        }
+
 
         func centerScrollViewContents(_ scrollView: UIScrollView) {
             let boundsSize = scrollView.bounds.size
