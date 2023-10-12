@@ -26,19 +26,85 @@ struct ViewFinder: View {
     let frameWidth: CGFloat = UIScreen.main.bounds.maxX
     let totalFrames: Int = 20
     let frameSpacing: CGFloat = 7
+    let maxCornerRadius: CGFloat = 19
+    let maxLineWidth: CGFloat = 3
+
+    @State var selectedFrames = Set<Int>()
 
     var body: some View {
         ZoomAndPanView(totalFrames: CGFloat(totalFrames), frameSpacing: frameSpacing, zoomScale: zoomScale, pageModel: pageModel) {
             HStack(spacing: frameSpacing) {
-                ForEach(0..<totalFrames) { _ in
-                    RoundedRectangleView(zoomScale: zoomScale)
-                        .frame(width: frameWidth, height: frameWidth * (9/16))
+                ForEach(0..<totalFrames, id: \.self) { frameIndex in
+                    Button(action: {
+                        handleTap(for: frameIndex)
+
+                        print(selectedFrames, frameIndex)
+                    }) {
+                        RoundedRectangle(cornerRadius: currentCornerRadius)
+                            .fill(Color.white.opacity(0.1))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: currentCornerRadius)
+                                    .strokeBorder(selectedFrames.contains(frameIndex) ? .yellow : .secondary, lineWidth: selectedFrames.contains(frameIndex) ? currentLineWidth : 1)
+                            )
+                            .animation(.smooth(duration: 0.3), value: zoomScale.scale)
+                    }
+
+                    .frame(width: frameWidth, height: frameWidth * (9/16))
                 }
             }
             .offset(y: -40)
         }
         .ignoresSafeArea(.container)
         .background(.black)
+//        .overlay(
+//            Text("^[\(selectedFrames) FRAME](inflect: true) SELECTED")
+//                .font(.footnote.weight(.medium))
+//                .foregroundColor(.black)
+//                .padding(.vertical, 5)
+//                .padding(.horizontal, 7)
+//                .background(.yellow)
+//                .clipShape(RoundedRectangle(cornerRadius: 5, style: .continuous))
+//                .transformEffect(.identity)
+//                .padding(16)
+//                .opacity(selectedFrames > 0 ? 1 : 0)
+//            , alignment: .top
+//        )
+    }
+
+    private func handleTap(for index: Int) {
+        if selectedFrames.contains(index) {
+            selectedFrames.removeAll()
+        } else if let minSelected = selectedFrames.min(), let maxSelected = selectedFrames.max() {
+            if index < minSelected {
+                selectedFrames.formUnion(Set((index...minSelected)).subtracting(selectedFrames))
+            } else if index > maxSelected {
+                selectedFrames.formUnion(Set((maxSelected...index)).subtracting(selectedFrames))
+            }
+        } else {
+            selectedFrames.insert(index)
+        }
+    }
+
+
+    private var currentCornerRadius: CGFloat {
+        let minScale: CGFloat = 0.3
+        let maxScale: CGFloat = 1.0
+        let normalizedScale = (zoomScale.scale - minScale) / (maxScale - minScale)
+        let invertedScale = 1 - normalizedScale
+        let cornerRadius = invertedScale * maxCornerRadius
+
+        return cornerRadius
+    }
+
+    private var currentLineWidth: CGFloat {
+        let minScale: CGFloat = 0.3
+        let maxScale: CGFloat = 1.0
+        let clampedScale = max(minScale, min(zoomScale.scale, maxScale))
+        let m: CGFloat = -2.86
+        let b: CGFloat = 3.86
+        let lineWidth = m * clampedScale + b
+
+        return lineWidth
     }
 }
 
@@ -123,7 +189,7 @@ struct ZoomAndPanView<Content: View>: UIViewRepresentable {
             targetContentOffset.pointee = CGPoint(x: pointX, y: targetContentOffset.pointee.y)
 
             UIView.animate(
-                withDuration: 0.3, // Duration of the animation
+                withDuration: 0.39, // Duration of the animation
                 delay: 0, // Delay before the animation starts
                 usingSpringWithDamping: 1, // Controls "bounciness" - 0 is very bouncy, 1 is no bounce
                 initialSpringVelocity: 0.1, // Controls the initial velocity of the animation
@@ -157,7 +223,7 @@ struct ZoomAndPanView<Content: View>: UIViewRepresentable {
     func makeUIView(context: Context) -> UIScrollView {
         let scrollView = UIScrollView()
         scrollView.delegate = context.coordinator
-        scrollView.minimumZoomScale = 0.39
+        scrollView.minimumZoomScale = 0.3
         scrollView.maximumZoomScale = 1.0
         scrollView.showsHorizontalScrollIndicator = false
         scrollView.showsVerticalScrollIndicator = false
@@ -188,57 +254,4 @@ struct ZoomAndPanView<Content: View>: UIViewRepresentable {
     }
 
     func updateUIView(_ uiView: UIScrollView, context: Context) {}
-}
-
-struct RoundedRectangleView: View {
-
-    @ObservedObject var zoomScale: ZoomScale
-
-    @State var selected = false
-
-    let maxCornerRadius: CGFloat = 19
-    let maxLineWidth: CGFloat = 3
-
-    var body: some View {
-        RoundedRectangle(cornerRadius: currentCornerRadius)
-            .fill(Color.white.opacity(0.1))
-            .overlay(
-                RoundedRectangle(cornerRadius: currentCornerRadius)
-                    .strokeBorder(selected ? .yellow : .secondary, lineWidth: selected ? currentLineWidth : 1)
-            )
-            .animation(.smooth(duration: 0.3), value: zoomScale.scale)
-            .onTapGesture {
-                withAnimation(.smooth(duration: 0.3)) {
-                    selected.toggle()
-                }
-            }
-    }
-
-    private var currentCornerRadius: CGFloat {
-        let minScale: CGFloat = 0.39
-        let maxScale: CGFloat = 1.0
-
-        let normalizedScale = (zoomScale.scale - minScale) / (maxScale - minScale)
-        let invertedScale = 1 - normalizedScale
-        let cornerRadius = invertedScale * maxCornerRadius
-
-        return cornerRadius
-    }
-
-    private var currentLineWidth: CGFloat {
-        let minScale: CGFloat = 0.39
-        let maxScale: CGFloat = 1.0
-
-        // Assuming zoomScale.scale is defined and is in the range [minScale, maxScale]
-        // Clamp the value to be sure it's within the expected range.
-        let clampedScale = max(minScale, min(zoomScale.scale, maxScale))
-
-        // Coefficients derived from the two points provided (zoomScale.scale, lineWidth): (1, 1) and (0.39, 3)
-        let m: CGFloat = -3.28
-        let b: CGFloat = 4.28
-
-        let lineWidth = m * clampedScale + b
-
-        return lineWidth
-    }
 }
