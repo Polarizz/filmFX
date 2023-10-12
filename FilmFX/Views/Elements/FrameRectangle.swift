@@ -9,7 +9,7 @@ import SwiftUI
 
 struct FrameRectangle: View {
 
-    @ObservedObject var zoomScale: ZoomScale
+    @ObservedObject var gestureManager: GestureManager
 
     let maxCornerRadius: CGFloat = 19
     let maxLineWidth: CGFloat = 3
@@ -30,10 +30,16 @@ struct FrameRectangle: View {
                     Text(String(number))
                         .font(.system(size: currentFontSize))
                         .foregroundColor(isSelected ? .yellow : .gray.opacity(0.5))
-                        .animation(.smooth(duration: 0.3), value: zoomScale.scale)
+                        .animation(.smooth(duration: 0.3), value: gestureManager.scale)
                         .padding(.horizontal, currentLeadingPadding)
                 }
             )
+            .contentShape(Rectangle())
+            .animation(.smooth(duration: 0.3), value: gestureManager.scale)
+            .onTapGesture {
+                Haptics.shared.play(.light)
+                withAnimation(.smooth(duration: 0.3)) { onTap() }
+            }
     }
 
     var rect: some View {
@@ -44,38 +50,34 @@ struct FrameRectangle: View {
                     .strokeBorder(isSelected ? .yellow : .gray.opacity(0.2), lineWidth: isSelected ? currentLineWidth : currentLineWidth/2)
             )
             .frame(width: frameWidth, height: frameWidth * (9/16))
-            .animation(.smooth(duration: 0.3), value: zoomScale.scale)
-            .onTapGesture {
-                withAnimation(.smooth(duration: 0.3)) { onTap() }
-            }
     }
 
     func interpolatedValue(for scale: CGFloat, minVal: CGFloat, maxVal: CGFloat) -> CGFloat {
-        let clampedScale = max(minScale, min(zoomScale.scale, maxScale))
+        let clampedScale = max(minScale, min(gestureManager.scale, maxScale))
         let normalizedScale = (clampedScale - minScale) / (maxScale - minScale)
         let invertedScale = 1 - normalizedScale
         return minVal + invertedScale * (maxVal - minVal)
     }
 
     var currentCornerRadius: CGFloat {
-        interpolatedValue(for: zoomScale.scale, minVal: 0, maxVal: maxCornerRadius)
+        interpolatedValue(for: gestureManager.scale, minVal: 0, maxVal: maxCornerRadius)
     }
 
     var currentLineWidth: CGFloat {
         let m: CGFloat = -2.86
         let b: CGFloat = 3.86
-        return m * zoomScale.scale + b
+        return m * gestureManager.scale + b
     }
 
     var currentFontSize: CGFloat {
-        interpolatedValue(for: zoomScale.scale, minVal: 16, maxVal: 43)
+        interpolatedValue(for: gestureManager.scale, minVal: 16, maxVal: 43)
     }
 
     var currentSpacing: CGFloat {
-        interpolatedValue(for: zoomScale.scale, minVal: 30, maxVal: 70)
+        interpolatedValue(for: gestureManager.scale, minVal: 30, maxVal: 70)
     }
 
     var currentLeadingPadding: CGFloat {
-        interpolatedValue(for: zoomScale.scale, minVal: 5, maxVal: 3)
+        interpolatedValue(for: gestureManager.scale, minVal: 5, maxVal: 3)
     }
 }

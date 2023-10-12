@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D42745992AD8B7F7005AEA7E /* Timeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = D42745982AD8B7F7005AEA7E /* Timeline.swift */; };
+		D427459B2AD8B984005AEA7E /* Haptics.swift in Sources */ = {isa = PBXBuildFile; fileRef = D427459A2AD8B984005AEA7E /* Haptics.swift */; };
 		D44BB3502AD736A50009AC4F /* FilmFXApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D44BB34F2AD736A50009AC4F /* FilmFXApp.swift */; };
 		D44BB3522AD736A50009AC4F /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D44BB3512AD736A50009AC4F /* ContentView.swift */; };
 		D44BB3542AD736A60009AC4F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D44BB3532AD736A60009AC4F /* Assets.xcassets */; };
@@ -15,9 +17,12 @@
 		D455DDFF2AD74BC6003C5EFE /* SafeArea.swift in Sources */ = {isa = PBXBuildFile; fileRef = D455DDFE2AD74BC6003C5EFE /* SafeArea.swift */; };
 		D4A798E42AD88EF4009E6733 /* ZoomAndPanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4A798E32AD88EF4009E6733 /* ZoomAndPanView.swift */; };
 		D4A798E72AD88F0F009E6733 /* FrameRectangle.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4A798E62AD88F0F009E6733 /* FrameRectangle.swift */; };
+		D4A798EB2AD89793009E6733 /* ButtonStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4A798EA2AD89793009E6733 /* ButtonStyles.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		D42745982AD8B7F7005AEA7E /* Timeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Timeline.swift; sourceTree = "<group>"; };
+		D427459A2AD8B984005AEA7E /* Haptics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Haptics.swift; sourceTree = "<group>"; };
 		D44BB34C2AD736A50009AC4F /* FilmFX.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FilmFX.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D44BB34F2AD736A50009AC4F /* FilmFXApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilmFXApp.swift; sourceTree = "<group>"; };
 		D44BB3512AD736A50009AC4F /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -27,6 +32,7 @@
 		D455DDFE2AD74BC6003C5EFE /* SafeArea.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafeArea.swift; sourceTree = "<group>"; };
 		D4A798E32AD88EF4009E6733 /* ZoomAndPanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomAndPanView.swift; sourceTree = "<group>"; };
 		D4A798E62AD88F0F009E6733 /* FrameRectangle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrameRectangle.swift; sourceTree = "<group>"; };
+		D4A798EA2AD89793009E6733 /* ButtonStyles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonStyles.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -65,6 +71,8 @@
 				D44BB3532AD736A60009AC4F /* Assets.xcassets */,
 				D44BB3552AD736A60009AC4F /* Preview Content */,
 				D455DDFE2AD74BC6003C5EFE /* SafeArea.swift */,
+				D427459A2AD8B984005AEA7E /* Haptics.swift */,
+				D4A798EA2AD89793009E6733 /* ButtonStyles.swift */,
 			);
 			path = FilmFX;
 			sourceTree = "<group>";
@@ -82,6 +90,7 @@
 			children = (
 				D4A798E52AD88F02009E6733 /* Elements */,
 				D44BB35E2AD737080009AC4F /* ViewFinder.swift */,
+				D42745982AD8B7F7005AEA7E /* Timeline.swift */,
 				D4A798E32AD88EF4009E6733 /* ZoomAndPanView.swift */,
 			);
 			path = Views;
@@ -165,10 +174,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D427459B2AD8B984005AEA7E /* Haptics.swift in Sources */,
+				D42745992AD8B7F7005AEA7E /* Timeline.swift in Sources */,
 				D44BB35F2AD737080009AC4F /* ViewFinder.swift in Sources */,
 				D455DDFF2AD74BC6003C5EFE /* SafeArea.swift in Sources */,
 				D44BB3522AD736A50009AC4F /* ContentView.swift in Sources */,
 				D44BB3502AD736A50009AC4F /* FilmFXApp.swift in Sources */,
+				D4A798EB2AD89793009E6733 /* ButtonStyles.swift in Sources */,
 				D4A798E42AD88EF4009E6733 /* ZoomAndPanView.swift in Sources */,
 				D4A798E72AD88F0F009E6733 /* FrameRectangle.swift in Sources */,
 			);

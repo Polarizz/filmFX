@@ -10,7 +10,7 @@ import UIKit
 
 struct ZoomAndPanView<Content: View>: UIViewRepresentable {
 
-    @ObservedObject var zoomScale: ZoomScale
+    @ObservedObject var gestureManager: GestureManager
     @ObservedObject var pageModel: PageModel
     @ObservedObject var dragState: DragState
 
@@ -19,10 +19,10 @@ struct ZoomAndPanView<Content: View>: UIViewRepresentable {
     let frameSpacing: CGFloat
     var content: Content
 
-    init(totalFrames: CGFloat, frameSpacing: CGFloat, zoomScale: ZoomScale, pageModel: PageModel, dragState: DragState, @ViewBuilder content: () -> Content) {
+    init(totalFrames: CGFloat, frameSpacing: CGFloat, gestureManager: GestureManager, pageModel: PageModel, dragState: DragState, @ViewBuilder content: () -> Content) {
         self.totalFrames = totalFrames
         self.frameSpacing = frameSpacing
-        self.zoomScale = zoomScale
+        self.gestureManager = gestureManager
         self.pageModel = pageModel
         self.dragState = dragState
         self.content = content()
@@ -30,20 +30,20 @@ struct ZoomAndPanView<Content: View>: UIViewRepresentable {
     }
 
     func makeCoordinator() -> Coordinator {
-        return Coordinator(zoomScale: zoomScale, frameWidth: frameWidth, totalFrames: totalFrames, frameSpacing: frameSpacing, pageModel: pageModel, dragState: dragState)
+        return Coordinator(gestureManager: gestureManager, frameWidth: frameWidth, totalFrames: totalFrames, frameSpacing: frameSpacing, pageModel: pageModel, dragState: dragState)
     }
 
     class Coordinator: NSObject, UIScrollViewDelegate {
         var hostingView: UIView!
-        var zoomScale: ZoomScale
+        var gestureManager: GestureManager
         var frameWidth: CGFloat
         var totalFrames: CGFloat
         var frameSpacing: CGFloat
         var pageModel: PageModel
         var dragState: DragState
 
-        init(zoomScale: ZoomScale, frameWidth: CGFloat, totalFrames: CGFloat, frameSpacing: CGFloat, pageModel: PageModel, dragState: DragState) {
-            self.zoomScale = zoomScale
+        init(gestureManager: GestureManager, frameWidth: CGFloat, totalFrames: CGFloat, frameSpacing: CGFloat, pageModel: PageModel, dragState: DragState) {
+            self.gestureManager = gestureManager
             self.frameWidth = frameWidth
             self.totalFrames = totalFrames
             self.frameSpacing = frameSpacing
@@ -58,12 +58,13 @@ struct ZoomAndPanView<Content: View>: UIViewRepresentable {
         func scrollViewDidZoom(_ scrollView: UIScrollView) {
             scrollView.contentOffset.y = 0
             centerScrollViewContents(scrollView)
-            zoomScale.scale = scrollView.zoomScale
+            gestureManager.scale = scrollView.zoomScale
             scrollView.isPagingEnabled = false
         }
 
         func scrollViewDidScroll(_ scrollView: UIScrollView) {
             scrollView.contentOffset.y = 0
+            gestureManager.offsetX = scrollView.contentOffset.x
         }
 
         func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
@@ -125,16 +126,6 @@ struct ZoomAndPanView<Content: View>: UIViewRepresentable {
 
             hostingView.frame = contentsFrame
         }
-
-        @objc func handleDoubleTap(_ recognizer: UITapGestureRecognizer) {
-            let scrollView = recognizer.view as! UIScrollView
-
-            if scrollView.zoomScale == 1.0 {
-                scrollView.setZoomScale(0.3, animated: true)
-            } else {
-                scrollView.setZoomScale(1.0, animated: true)
-            }
-        }
     }
 
     func makeUIView(context: Context) -> UIScrollView {
@@ -166,10 +157,6 @@ struct ZoomAndPanView<Content: View>: UIViewRepresentable {
         scrollView.contentSize = containerView.frame.size
 
         context.coordinator.hostingView = containerView
-
-        let doubleTapRecognizer = UITapGestureRecognizer(target: context.coordinator, action: #selector(Coordinator.handleDoubleTap(_:)))
-        doubleTapRecognizer.numberOfTapsRequired = 2
-        scrollView.addGestureRecognizer(doubleTapRecognizer)
 
         return scrollView
     }

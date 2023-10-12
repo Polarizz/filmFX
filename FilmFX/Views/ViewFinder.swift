@@ -11,8 +11,9 @@ class PageModel: ObservableObject {
     @Published var currentPage: Int = 0
 }
 
-class ZoomScale: ObservableObject {
+class GestureManager: ObservableObject {
     @Published var scale: CGFloat = 1.0
+    @Published var offsetX: CGFloat = 0
 }
 
 class DragState: ObservableObject {
@@ -23,7 +24,7 @@ struct ViewFinder: View {
 
     @Environment(\.safeAreaInsets) var safeAreaInsets
 
-    @StateObject private var zoomScale = ZoomScale()
+    @StateObject private var gestureManager = GestureManager()
     @StateObject private var pageModel = PageModel()
     @StateObject private var dragState = DragState()
 
@@ -38,15 +39,19 @@ struct ViewFinder: View {
     @State var selectedFrames = Set<Int>()
 
     var body: some View {
-        ZoomAndPanView(totalFrames: CGFloat(totalFrames), frameSpacing: frameSpacing, zoomScale: zoomScale, pageModel: pageModel, dragState: dragState) {
+        ZoomAndPanView(totalFrames: CGFloat(totalFrames), frameSpacing: frameSpacing, gestureManager: gestureManager, pageModel: pageModel, dragState: dragState) {
             LazyHStack(alignment: .top, spacing: frameSpacing) {
                 ForEach(0..<totalFrames, id: \.self) { index in
-                    FrameRectangle(zoomScale: zoomScale, number: index + 1, frameWidth: frameWidth, isSelected: selectedFrames.contains(index)) {
+                    FrameRectangle(gestureManager: gestureManager, number: index + 1, frameWidth: frameWidth, isSelected: selectedFrames.contains(index)) {
                         handleTap(for: index)
                     }
                 }
             }
             .offset(y: -40)
+            .overlay(
+                Timeline(gestureManager: gestureManager, frameSpacing: frameSpacing)
+                , alignment: .topLeading
+            )
         }
         .ignoresSafeArea(.container)
         .background(.black)
@@ -64,7 +69,7 @@ struct ViewFinder: View {
 
                 if dragState.isDragging {
                     Text("00:10.39")
-                        .font(.subheadline.weight(.medium))
+                        .font(.system(.subheadline, design: .monospaced).weight(.medium))
                         .foregroundColor(.white)
                         .padding(.vertical, 5)
                         .padding(.horizontal, 7)
