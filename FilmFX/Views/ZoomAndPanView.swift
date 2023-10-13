@@ -98,14 +98,24 @@ struct ZoomAndPanView<Content: View>: UIViewRepresentable {
             )
         }
 
+        var workItem: DispatchWorkItem?
+
         func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+            workItem?.cancel()  // Cancel any existing work item if it's scheduled
             dragState.isDragging = true
         }
 
         func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+            // Cancel the existing work item
+            workItem?.cancel()
+
+            // Schedule the new work item
+            workItem = DispatchWorkItem {
                 self.dragState.isDragging = false
             }
+
+            // Execute the work item after 5 seconds
+            DispatchQueue.main.asyncAfter(deadline: .now() + 3, execute: workItem!)
         }
 
         func centerScrollViewContents(_ scrollView: UIScrollView) {

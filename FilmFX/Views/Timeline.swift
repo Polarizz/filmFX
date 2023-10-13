@@ -18,6 +18,8 @@ struct Timeline: View {
 
     @ObservedObject var gestureManager: GestureManager
 
+    @State private var selectedSectionIndex: Int? = nil  // Keep track of the selected section
+
     var frameSpacing: CGFloat
 
     let frameWidth: CGFloat = UIScreen.main.bounds.maxX
@@ -36,48 +38,53 @@ struct Timeline: View {
     ]
 
     var body: some View {
-         VStack(alignment: .leading, spacing: currentSpacing) {
-             ForEach(sections.indices) { index in
-                 RoundedRectangle(cornerRadius: currentRadius)
-                     .fill(.yellow)
-                     .frame(width: (frameWidth * sections[index].length) + (frameSpacing * (sections[index].length - 1)), height: currentTimelineHeight)
-                     .animation(.smooth(duration: 0.3), value: gestureManager.offsetX != 0)
-                     .animation(.smooth(duration: 0.3), value: gestureManager.scale != 0.3 || gestureManager.scale != 1)
-                     .overlay(
-                         HStack(spacing: 0) {
-                             Image(systemName: "chevron.compact.left")
-                                 .scaleEffect(currentTextSize)
+        VStack(alignment: .leading, spacing: currentSpacing) {
+            ForEach(sections.indices) { index in
+                RoundedRectangle(cornerRadius: currentRadius)
+                    .fill(.yellow)
+                    .frame(width: (frameWidth * sections[index].length) + (frameSpacing * (sections[index].length - 1)), height: currentTimelineHeight)
+                    .overlay(
+                        HStack(spacing: 0) {
+                            Image(systemName: "chevron.compact.left")
+                                .scaleEffect(currentTextSize)
 
-                             ZStack(alignment: .leading) {
-                                 RoundedRectangle(cornerRadius: currentRadius - currentTimelineVerticalPadding)
-                                     .fill(.black.opacity(0.39))
+                            ZStack(alignment: .leading) {
+                                RoundedRectangle(cornerRadius: currentRadius - currentTimelineVerticalPadding)
+                                    .fill(.black.opacity(0.39))
 
-                                 HStack(spacing: 7) {
-                                     Image(systemName: sections[index].icon)
-                                         .font(.body.weight(.medium))
-                                         .symbolRenderingMode(.hierarchical)
+                                HStack(spacing: 7) {
+                                    Image(systemName: sections[index].icon)
+                                        .font(.body.weight(.medium))
+                                        .symbolRenderingMode(.hierarchical)
 
-                                     Text(sections[index].text)
-                                         .font(.subheadline.weight(.medium))
-                                 }
-                                 .padding(.horizontal, 10)
-                                 .scaleEffect(currentTextSize, anchor: .leading)
-                             }
-                             .padding(.vertical, currentTimelineVerticalPadding)
-                             .padding(.horizontal, currentTimelineHorizontalPadding)
+                                    Text(sections[index].text)
+                                        .font(.subheadline.weight(.medium))
+                                }
+                                .padding(.horizontal, 10)
+                                .scaleEffect(currentTextSize, anchor: .leading)
+                            }
+                            .padding(.vertical, currentTimelineVerticalPadding)
+                            .padding(.horizontal, currentTimelineHorizontalPadding)
 
-                             Image(systemName: "chevron.compact.right")
-                                 .scaleEffect(currentTextSize)
-                         }
-                         .font(.title3.weight(.semibold))
-                         .foregroundColor(.black)
-                         .padding(.horizontal, currentTimelineHorizontalPadding)
-                     )
-                     .offset(x: (frameSpacing + frameWidth) * sections[index].frameOffset)
-             }
-         }
-         .offset(y: currentOffset)
-     }
+                            Image(systemName: "chevron.compact.right")
+                                .scaleEffect(currentTextSize)
+                        }
+                        .font(.title3.weight(.semibold))
+                        .foregroundColor(.black)
+                        .padding(.horizontal, currentTimelineHorizontalPadding)
+                    )
+                    .opacity(selectedSectionIndex == index ? 1.0 : 0.5)
+                    .onTapGesture {
+                        Haptics.shared.play(.light)
+                        selectedSectionIndex = index
+                    }
+                    .offset(x: (frameSpacing + frameWidth) * sections[index].frameOffset)
+                    .offset(y: currentOffset)
+            }
+        }
+        .animation(.smooth(duration: 0.3), value: gestureManager.offsetX != 0)
+        .animation(.smooth(duration: 0.3), value: gestureManager.scale != 0.3 || gestureManager.scale != 1)
+    }
 
     func interpolatedValue(for scale: CGFloat, minVal: CGFloat, maxVal: CGFloat) -> CGFloat {
         let clampedScale = max(minScale, min(gestureManager.scale, maxScale))
@@ -91,7 +98,7 @@ struct Timeline: View {
     }
 
     var currentTimelineHeight: CGFloat {
-        interpolatedValue(for: gestureManager.scale, minVal: 35, maxVal: 135)
+        interpolatedValue(for: gestureManager.scale, minVal: 39, maxVal: 135)
     }
 
     var currentTimelineHorizontalPadding: CGFloat {
