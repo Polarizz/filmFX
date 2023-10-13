@@ -46,6 +46,7 @@ struct ViewFinder: View {
                         handleTap(for: index)
                     }
                 }
+                .id(UUID())
             }
             .offset(y: -40)
             .overlay(
