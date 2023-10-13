@@ -79,15 +79,15 @@ struct Timeline: View {
                         Haptics.shared.play(.light)
                         selectedSectionIndex = index
                     }
-                    .offset(x: (frameSpacing + frameWidth) * sections[index].frameOffset)
+                    .offset(x: (frameSpacing + currentWidth) * sections[index].frameOffset)
             }
         }
         .offset(y: currentOffset)
         .offset(x: -gestureManager.offsetX)
         .animation(.smooth(duration: 0.3), value: ((abs(gestureManager.offsetX)/gestureManager.page) - 9).truncatingRemainder(dividingBy: UIScreen.main.bounds.maxX) == 0)
         .animation(.smooth(duration: 0.3), value: gestureManager.offsetX != 0)
-
-//        .animation(.smooth(duration: 0.3), value: gestureManager.scale != 0.3 || gestureManager.scale != 1)
+        .animation(.smooth(duration: 0.3), value: gestureManager.scale != 0.3)
+        .animation(.smooth(duration: 0.3), value: gestureManager.scale != 1)
     }
 
     func interpolatedValue(for scale: CGFloat, minVal: CGFloat, maxVal: CGFloat) -> CGFloat {
