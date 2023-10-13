@@ -65,7 +65,7 @@ struct Timeline: View {
                                 }
                                 .padding(.horizontal, 10)
                                 .padding(.vertical, 9)
-                                .offset(x: gestureManager.offsetX > 26 ? gestureManager.offsetX - 26 : 0)
+                                .offset(x: gestureManager.offsetX > 26 + ((frameSpacing + currentWidth) * sections[index].frameOffset) ? gestureManager.offsetX - 26 - ((frameSpacing + currentWidth) * sections[index].frameOffset) : 0)
                                 .background(.black.opacity(0.39))
                                 .clipShape(
                                     RoundedRectangle(cornerRadius: 4)
