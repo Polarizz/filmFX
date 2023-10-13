@@ -21,6 +21,10 @@ class DragState: ObservableObject {
     @Published var isDragging: Bool = false
 }
 
+class TimelineSelectionManager: ObservableObject {
+    @Published var selectedSectionIndex: Int? = nil
+}
+
 struct ViewFinder: View {
 
     @Environment(\.safeAreaInsets) var safeAreaInsets
@@ -28,6 +32,7 @@ struct ViewFinder: View {
     @StateObject private var gestureManager = GestureManager()
     @StateObject private var pageModel = PageModel()
     @StateObject private var dragState = DragState()
+    @StateObject private var selectionManager = TimelineSelectionManager()
 
     let frameWidth: CGFloat = UIScreen.main.bounds.maxX
     let totalFrames: Int = 20
@@ -38,6 +43,8 @@ struct ViewFinder: View {
     let frameSpacing: CGFloat = 9
 
     @State var selectedFrames = Set<Int>()
+    @State var gestureOffsetX: CGFloat = 0.0
+    @State var lastGestureOffsetX: CGFloat = 0.0
 
     var body: some View {
         ZoomAndPanView(totalFrames: CGFloat(totalFrames), frameSpacing: frameSpacing, gestureManager: gestureManager, pageModel: pageModel, dragState: dragState) {
@@ -53,9 +60,34 @@ struct ViewFinder: View {
         .ignoresSafeArea(.container)
         .background(.black)
         .overlay(
-            Timeline(gestureManager: gestureManager, dragState: dragState, frameSpacing: frameSpacing)
-                    .offset(y: -160)
-            , alignment: .bottomLeading
+            Timeline(gestureManager: gestureManager, dragState: dragState, selectionManager: selectionManager, frameSpacing: frameSpacing)
+                .offset(y: 390)
+            , alignment: .topLeading
+        )
+        .overlay(
+            Group {
+                //                if selectionManager.selectedSectionIndex != nil {
+                ScrollViewWrapper {
+                    HStack(spacing: 9) {
+                        ForEach(0..<4, id: \.self) { _ in
+                            Capsule()
+                                .fill(Color.white)
+                                .frame(width: 1, height: 11)
+                            ForEach(0..<9, id: \.self) { _ in
+                                Capsule()
+                                    .fill(Color.gray.opacity(0.5))
+                                    .frame(width: 1, height: 10)
+                            }
+                        }
+                        Capsule()
+                            .fill(Color.white)
+                            .frame(width: 1, height: 12)
+                    }
+                }
+                .frame(height: 92)
+                //                }
+            }
+            , alignment: .bottom
         )
         .overlay(
             VStack(spacing: 9) {
@@ -79,8 +111,8 @@ struct ViewFinder: View {
                         .clipShape(RoundedRectangle(cornerRadius: 5, style: .continuous))
                 }
             }
-            .padding(16)
-            .animation(.smooth(duration: 0.3), value: dragState.isDragging)
+                .padding(16)
+                .animation(.smooth(duration: 0.3), value: dragState.isDragging)
             , alignment: .top
         )
     }

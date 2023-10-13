@@ -18,6 +18,7 @@
 		D4A798E42AD88EF4009E6733 /* ZoomAndPanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4A798E32AD88EF4009E6733 /* ZoomAndPanView.swift */; };
 		D4A798E72AD88F0F009E6733 /* FrameRectangle.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4A798E62AD88F0F009E6733 /* FrameRectangle.swift */; };
 		D4A798EB2AD89793009E6733 /* ButtonStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4A798EA2AD89793009E6733 /* ButtonStyles.swift */; };
+		D4DE90F52AD9264400830634 /* ScrollViewWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4DE90F42AD9264400830634 /* ScrollViewWrapper.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -33,6 +34,7 @@
 		D4A798E32AD88EF4009E6733 /* ZoomAndPanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomAndPanView.swift; sourceTree = "<group>"; };
 		D4A798E62AD88F0F009E6733 /* FrameRectangle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrameRectangle.swift; sourceTree = "<group>"; };
 		D4A798EA2AD89793009E6733 /* ButtonStyles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonStyles.swift; sourceTree = "<group>"; };
+		D4DE90F42AD9264400830634 /* ScrollViewWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollViewWrapper.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -92,6 +94,7 @@
 				D44BB35E2AD737080009AC4F /* ViewFinder.swift */,
 				D42745982AD8B7F7005AEA7E /* Timeline.swift */,
 				D4A798E32AD88EF4009E6733 /* ZoomAndPanView.swift */,
+				D4DE90F42AD9264400830634 /* ScrollViewWrapper.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -177,6 +180,7 @@
 				D427459B2AD8B984005AEA7E /* Haptics.swift in Sources */,
 				D42745992AD8B7F7005AEA7E /* Timeline.swift in Sources */,
 				D44BB35F2AD737080009AC4F /* ViewFinder.swift in Sources */,
+				D4DE90F52AD9264400830634 /* ScrollViewWrapper.swift in Sources */,
 				D455DDFF2AD74BC6003C5EFE /* SafeArea.swift in Sources */,
 				D44BB3522AD736A50009AC4F /* ContentView.swift in Sources */,
 				D44BB3502AD736A50009AC4F /* FilmFXApp.swift in Sources */,

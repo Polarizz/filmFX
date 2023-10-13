@@ -18,8 +18,7 @@ struct Timeline: View {
 
     @ObservedObject var gestureManager: GestureManager
     @ObservedObject var dragState: DragState
-
-    @State private var selectedSectionIndex: Int? = nil  // Keep track of the selected section
+    @ObservedObject var selectionManager: TimelineSelectionManager
 
     var frameSpacing: CGFloat
 
@@ -34,52 +33,53 @@ struct Timeline: View {
         TimelineSection(icon: "circle.dotted.circle", text: "Vignette", length: 2, frameOffset: 0),
         TimelineSection(icon: "plusminus.circle", text: "Exposure", length: 3, frameOffset: 0),
         TimelineSection(icon: "circle.righthalf.filled", text: "Contrast", length: 2, frameOffset: 1),
-        TimelineSection(icon: "thermometer.medium", text: "Temperature", length: 5, frameOffset: 2),
-        TimelineSection(icon: "circle.bottomrighthalf.checkered", text: "Noise Reduction", length: 3, frameOffset: 3)
+        TimelineSection(icon: "thermometer.medium", text: "Temperature", length: 5, frameOffset: 2)
     ]
 
     var body: some View {
         VStack(alignment: .leading, spacing: currentSpacing) {
             ForEach(sections.indices, id: \.self) { index in
-                RoundedRectangle(cornerRadius: currentRadius)
-                    .fill(.yellow)
-                    .frame(width: (currentWidth * sections[index].length) + (frameSpacing * (sections[index].length - 1)) - frameSpacing/2, height: currentTimelineHeight)
-                    .overlay(
-                        HStack(spacing: 0) {
-                            Image(systemName: "chevron.compact.left")
-                                .scaleEffect(currentTextSize)
+                Button(action: {
+                    Haptics.shared.play(.light)
+                    onTapSection(index: index)
+                }) {
+                    RoundedRectangle(cornerRadius: currentRadius)
+                        .fill(.yellow)
+                        .frame(width: (currentWidth * sections[index].length) + (frameSpacing * (sections[index].length - 1)) - frameSpacing/2, height: currentTimelineHeight)
+                        .overlay(
+                            HStack(spacing: 0) {
+                                Image(systemName: "chevron.compact.left")
+                                    .scaleEffect(currentTextSize)
 
-                            ZStack(alignment: .leading) {
-                                RoundedRectangle(cornerRadius: currentRadius - currentTimelineVerticalPadding)
-                                    .fill(.black.opacity(0.39))
+                                ZStack(alignment: .leading) {
+                                    RoundedRectangle(cornerRadius: currentRadius - currentTimelineVerticalPadding)
+                                        .fill(.black.opacity(0.39))
 
-                                HStack(spacing: 7) {
-                                    Image(systemName: sections[index].icon)
-                                        .font(.body.weight(.medium))
-                                        .symbolRenderingMode(.hierarchical)
+                                    HStack(spacing: 7) {
+                                        Image(systemName: sections[index].icon)
+                                            .font(.body.weight(.medium))
+                                            .symbolRenderingMode(.hierarchical)
 
-                                    Text(sections[index].text)
-                                        .font(.subheadline.weight(.medium))
+                                        Text(sections[index].text)
+                                            .font(.subheadline.weight(.medium))
+                                    }
+                                    .padding(.horizontal, 10)
+                                    .scaleEffect(currentTextSize, anchor: .leading)
                                 }
-                                .padding(.horizontal, 10)
-                                .scaleEffect(currentTextSize, anchor: .leading)
-                            }
-                            .padding(.vertical, currentTimelineVerticalPadding)
-                            .padding(.horizontal, currentTimelineHorizontalPadding)
+                                .padding(.vertical, currentTimelineVerticalPadding)
+                                .padding(.horizontal, currentTimelineHorizontalPadding)
 
-                            Image(systemName: "chevron.compact.right")
-                                .scaleEffect(currentTextSize)
-                        }
-                        .font(.title3.weight(.semibold))
-                        .foregroundColor(.black)
-                        .padding(.horizontal, currentTimelineHorizontalPadding)
-                    )
-//                    .opacity(selectedSectionIndex == index ? 1.0 : 0.5)
-                    .onTapGesture {
-                        Haptics.shared.play(.light)
-                        selectedSectionIndex = index
-                    }
-                    .offset(x: (frameSpacing + currentWidth) * sections[index].frameOffset)
+                                Image(systemName: "chevron.compact.right")
+                                    .scaleEffect(currentTextSize)
+                            }
+                                .font(.title3.weight(.semibold))
+                                .foregroundColor(.black)
+                                .padding(.horizontal, currentTimelineHorizontalPadding)
+                        )
+                        .opacity(selectionManager.selectedSectionIndex == index ? 1.0 : 0.39)
+                        .offset(x: (frameSpacing + currentWidth) * sections[index].frameOffset)
+                }
+                .buttonStyle(BounceButtonStyle())
             }
         }
         .offset(y: currentOffset)
@@ -89,6 +89,25 @@ struct Timeline: View {
         .animation(.smooth(duration: 0.3), value: gestureManager.scale != 0.3)
         .animation(.smooth(duration: 0.3), value: gestureManager.scale != 1)
     }
+
+    private func onTapSection(index: Int) {
+           if selectionManager.selectedSectionIndex == index {
+               // Deselect the section if it's tapped when already selected
+               selectionManager.selectedSectionIndex = nil
+           } else {
+               // Otherwise, select the tapped section
+               selectionManager.selectedSectionIndex = index
+           }
+       }
+
+       private func isSelected(index: Int) -> Bool {
+           // If no section is selected, treat all as selected
+           guard let selectedSectionIndex = selectionManager.selectedSectionIndex else {
+               return true
+           }
+           // Otherwise, only the selected section is treated as selected
+           return index == selectedSectionIndex
+       }
 
     func interpolatedValue(for scale: CGFloat, minVal: CGFloat, maxVal: CGFloat) -> CGFloat {
         let clampedScale = gestureManager.scale
