@@ -30,7 +30,9 @@ struct Timeline: View {
     let sections: [TimelineSection] = [
         TimelineSection(icon: "circle.dotted.circle", text: "Vignette", length: 3, frameOffset: 0),
         TimelineSection(icon: "plusminus.circle", text: "Exposure", length: 3, frameOffset: 0),
-        TimelineSection(icon: "circle.righthalf.filled", text: "Contrast", length: 2, frameOffset: 1)
+        TimelineSection(icon: "circle.righthalf.filled", text: "Contrast", length: 2, frameOffset: 1),
+        TimelineSection(icon: "thermometer.medium", text: "Temperature", length: 5, frameOffset: 2),
+        TimelineSection(icon: "circle.bottomrighthalf.checkered", text: "Noise Reduction", length: 3, frameOffset: 3)
     ]
 
     var body: some View {
@@ -89,7 +91,7 @@ struct Timeline: View {
     }
 
     var currentTimelineHeight: CGFloat {
-        interpolatedValue(for: gestureManager.scale, minVal: 40, maxVal: 135)
+        interpolatedValue(for: gestureManager.scale, minVal: 35, maxVal: 135)
     }
 
     var currentTimelineHorizontalPadding: CGFloat {
@@ -101,7 +103,7 @@ struct Timeline: View {
     }
 
     var currentTextSize: CGFloat {
-        interpolatedValue(for: gestureManager.scale, minVal: 1, maxVal: 3)
+        interpolatedValue(for: gestureManager.scale, minVal: 0.95, maxVal: 3)
     }
 
     var currentRadius: CGFloat {
