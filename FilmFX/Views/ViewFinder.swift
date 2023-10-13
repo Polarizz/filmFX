@@ -66,26 +66,33 @@ struct ViewFinder: View {
         )
         .overlay(
             Group {
-                //                if selectionManager.selectedSectionIndex != nil {
-                ScrollViewWrapper {
-                    HStack(spacing: 9) {
-                        ForEach(0..<4, id: \.self) { _ in
-                            Capsule()
-                                .fill(Color.white)
-                                .frame(width: 1, height: 11)
-                            ForEach(0..<9, id: \.self) { _ in
+                if selectionManager.selectedSectionIndex != nil {
+                    VStack(spacing: 0) {
+                        Circle()
+                            .fill(.white)
+                            .frame(width: 7, height: 7)
+                            .offset(y: 30)
+
+                        ScrollViewWrapper {
+                            HStack(spacing: 9) {
+                                ForEach(0..<4, id: \.self) { _ in
+                                    Capsule()
+                                        .fill(Color.white)
+                                        .frame(width: 1, height: 11)
+                                    ForEach(0..<9, id: \.self) { _ in
+                                        Capsule()
+                                            .fill(Color.gray.opacity(0.5))
+                                            .frame(width: 1, height: 10)
+                                    }
+                                }
                                 Capsule()
-                                    .fill(Color.gray.opacity(0.5))
-                                    .frame(width: 1, height: 10)
+                                    .fill(Color.white)
+                                    .frame(width: 1, height: 12)
                             }
                         }
-                        Capsule()
-                            .fill(Color.white)
-                            .frame(width: 1, height: 12)
+                        .frame(height: 92)
                     }
                 }
-                .frame(height: 92)
-                //                }
             }
             , alignment: .bottom
         )
