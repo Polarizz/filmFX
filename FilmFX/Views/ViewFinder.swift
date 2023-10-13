@@ -14,6 +14,7 @@ class PageModel: ObservableObject {
 class GestureManager: ObservableObject {
     @Published var scale: CGFloat = 1.0
     @Published var offsetX: CGFloat = 0
+    @Published var page: CGFloat = 0
 }
 
 class DragState: ObservableObject {
@@ -40,22 +41,22 @@ struct ViewFinder: View {
 
     var body: some View {
         ZoomAndPanView(totalFrames: CGFloat(totalFrames), frameSpacing: frameSpacing, gestureManager: gestureManager, pageModel: pageModel, dragState: dragState) {
-            LazyHStack(alignment: .top, spacing: frameSpacing) {
+            HStack(alignment: .top, spacing: frameSpacing) {
                 ForEach(0..<totalFrames, id: \.self) { index in
                     FrameRectangle(gestureManager: gestureManager, number: index + 1, frameWidth: frameWidth, isSelected: selectedFrames.contains(index)) {
                         handleTap(for: index)
                     }
                 }
-                .id(UUID())
             }
-            .offset(y: -40)
-            .overlay(
-                Timeline(gestureManager: gestureManager, frameSpacing: frameSpacing)
-                , alignment: .topLeading
-            )
         }
+        .offset(y: -50)
         .ignoresSafeArea(.container)
         .background(.black)
+        .overlay(
+            Timeline(gestureManager: gestureManager, dragState: dragState, frameSpacing: frameSpacing)
+                    .offset(y: -160)
+            , alignment: .bottomLeading
+        )
         .overlay(
             VStack(spacing: 9) {
                 if selectedFrames.count > 0 {

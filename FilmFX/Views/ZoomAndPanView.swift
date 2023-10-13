@@ -65,6 +65,8 @@ struct ZoomAndPanView<Content: View>: UIViewRepresentable {
         func scrollViewDidScroll(_ scrollView: UIScrollView) {
             scrollView.contentOffset.y = 0
             gestureManager.offsetX = scrollView.contentOffset.x
+
+            print(gestureManager.page, gestureManager.offsetX)
         }
 
         func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
@@ -79,6 +81,8 @@ struct ZoomAndPanView<Content: View>: UIViewRepresentable {
             } else {
                 nextPage = velocity.x > 0 ? ceil(approximatePage) : floor(approximatePage)
             }
+
+            gestureManager.page = nextPage
 
             var pointX = nextPage * pageWidth
 
