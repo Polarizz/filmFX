@@ -68,10 +68,12 @@ struct ScrollViewWrapper<Content: View>: UIViewRepresentable {
     class Coordinator: NSObject, UIScrollViewDelegate {
         var initialOffsetIsSet = false
         var lastOffset: CGFloat = 0
-        var feedbackGenerator = UIImpactFeedbackGenerator(style: .light)
+        var feedbackGenerator = UISelectionFeedbackGenerator()
 
         func scrollViewDidScroll(_ scrollView: UIScrollView) {
             let offset = scrollView.contentOffset.x
+
+            // Check if contentOffset is within the allowed range
             let maxOffsetX = scrollView.contentSize.width - scrollView.frame.width + scrollView.contentInset.right
             let minOffsetX = -scrollView.contentInset.left
 
@@ -79,7 +81,7 @@ struct ScrollViewWrapper<Content: View>: UIViewRepresentable {
                 let delta = offset - lastOffset
 
                 if abs(delta) > 10 {
-                    feedbackGenerator.impactOccurred(intensity: 0.3)
+                    feedbackGenerator.selectionChanged()
                     lastOffset = offset - delta.truncatingRemainder(dividingBy: 10)
                 }
             }
