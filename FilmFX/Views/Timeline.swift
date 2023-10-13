@@ -40,7 +40,7 @@ struct Timeline: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: currentSpacing) {
-            ForEach(sections.indices) { index in
+            ForEach(sections.indices, id: \.self) { index in
                 RoundedRectangle(cornerRadius: currentRadius)
                     .fill(.yellow)
                     .frame(width: (currentWidth * sections[index].length) + (frameSpacing * (sections[index].length - 1)) - frameSpacing/2, height: currentTimelineHeight)
@@ -91,7 +91,7 @@ struct Timeline: View {
     }
 
     func interpolatedValue(for scale: CGFloat, minVal: CGFloat, maxVal: CGFloat) -> CGFloat {
-        let clampedScale = max(minScale, gestureManager.scale)
+        let clampedScale = gestureManager.scale
         let normalizedScale = (clampedScale - minScale) / (maxScale - minScale)
         let invertedScale = 1 - normalizedScale
         return minVal + normalizedScale * (maxVal - minVal)
@@ -102,7 +102,7 @@ struct Timeline: View {
     }
 
     var currentWidth: CGFloat {
-        interpolatedValue(for: gestureManager.scale, minVal: frameWidth * (3/10), maxVal: frameWidth)
+        interpolatedValue(for: gestureManager.scale, minVal: frameWidth * minScale, maxVal: frameWidth)
     }
 
     var currentTimelineHeight: CGFloat {
