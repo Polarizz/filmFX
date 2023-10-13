@@ -25,6 +25,10 @@ class TimelineSelectionManager: ObservableObject {
     @Published var selectedSectionIndex: Int? = nil
 }
 
+class ScrollManager: ObservableObject {
+    @Published var positionID: Int = 0
+}
+
 struct ViewFinder: View {
 
     @Environment(\.safeAreaInsets) var safeAreaInsets
@@ -33,6 +37,7 @@ struct ViewFinder: View {
     @StateObject private var pageModel = PageModel()
     @StateObject private var dragState = DragState()
     @StateObject private var selectionManager = TimelineSelectionManager()
+    @StateObject private var scrollManager = ScrollManager()
 
     let frameWidth: CGFloat = UIScreen.main.bounds.maxX
     let totalFrames: Int = 20
@@ -67,13 +72,19 @@ struct ViewFinder: View {
         .overlay(
             Group {
                 if selectionManager.selectedSectionIndex != nil {
-                    VStack(spacing: 0) {
-                        Circle()
-                            .fill(.white)
-                            .frame(width: 7, height: 7)
-                            .offset(y: 30)
+                    ZStack(alignment: .bottom) {
+                        VStack(spacing: 5) {
+                            Text(String(scrollManager.positionID))
+                                .font(.system(.subheadline, design: .monospaced).weight(.medium))
+                                .foregroundColor(scrollManager.positionID == 0 ? .white : .yellow)
 
-                        ScrollViewWrapper {
+                            Capsule()
+                                .fill(scrollManager.positionID == 0 ? .white : .yellow)
+                                .frame(width: 1, height: 25)
+                        }
+                        .offset(y: -40)
+
+                        ScrollViewWrapper(scrollManager: scrollManager) {
                             HStack(spacing: 9) {
                                 ForEach(0..<4, id: \.self) { _ in
                                     Capsule()

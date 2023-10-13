@@ -9,9 +9,13 @@ import SwiftUI
 import UIKit
 
 struct ScrollViewWrapper<Content: View>: UIViewRepresentable {
+
+    @ObservedObject var scrollManager: ScrollManager
+
     var content: Content
 
-    init(@ViewBuilder content: () -> Content) {
+    init(scrollManager: ScrollManager, @ViewBuilder content: () -> Content) {
+        self.scrollManager = scrollManager
         self.content = content()
     }
 
@@ -62,16 +66,26 @@ struct ScrollViewWrapper<Content: View>: UIViewRepresentable {
     }
 
     func makeCoordinator() -> Coordinator {
-        return Coordinator()
+        return Coordinator(scrollManager: scrollManager)
     }
 
     class Coordinator: NSObject, UIScrollViewDelegate {
+        
+        var scrollManager: ScrollManager
         var initialOffsetIsSet = false
         var lastOffset: CGFloat = 0
         var feedbackGenerator = UISelectionFeedbackGenerator()
 
+        init(scrollManager: ScrollManager) {
+            self.scrollManager = scrollManager
+        }
+
         func scrollViewDidScroll(_ scrollView: UIScrollView) {
             let offset = scrollView.contentOffset.x
+
+            scrollManager.positionID = Int(-1 + (offset / 10) * 2.5)
+
+            print(scrollManager.positionID)
 
             // Check if contentOffset is within the allowed range
             let maxOffsetX = scrollView.contentSize.width - scrollView.frame.width + scrollView.contentInset.right
