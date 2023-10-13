@@ -74,8 +74,9 @@ struct ViewFinder: View {
                 if selectionManager.selectedSectionIndex != nil {
                     ZStack(alignment: .bottom) {
                         VStack(spacing: 5) {
-                            Text(String(scrollManager.positionID))
-                                .font(.system(.subheadline, design: .monospaced).weight(.medium))
+                            Text(String(min(50, max(-50, scrollManager.positionID))))
+                                .font(.custom("SFCamera", size: UIConstants.callout))
+                                .tracking(1)
                                 .foregroundColor(scrollManager.positionID == 0 ? .white : .yellow)
 
                             Capsule()
@@ -111,7 +112,7 @@ struct ViewFinder: View {
             VStack(spacing: 9) {
                 if selectedFrames.count > 0 {
                     Text("^[\(selectedFrames.count) FRAME](inflect: true) SELECTED")
-                        .font(.footnote.weight(.medium))
+                        .font(.system(size: UIConstants.footnote).weight(.medium))
                         .foregroundColor(.black)
                         .padding(.vertical, 5)
                         .padding(.horizontal, 7)
@@ -120,8 +121,9 @@ struct ViewFinder: View {
                 }
 
                 if dragState.isDragging {
-                    Text("00:10.39")
-                        .font(.system(.subheadline, design: .monospaced).weight(.medium))
+                    Text(timeString(from: gestureManager.offsetX))
+                        .font(.custom("SFCamera", size: UIConstants.callout))
+                        .tracking(1)
                         .foregroundColor(.white)
                         .padding(.vertical, 5)
                         .padding(.horizontal, 7)
@@ -135,7 +137,7 @@ struct ViewFinder: View {
         )
     }
 
-    private func handleTap(for index: Int) {
+    func handleTap(for index: Int) {
         if selectedFrames.contains(index) {
             selectedFrames.removeAll()
         } else if let minSelected = selectedFrames.min(), let maxSelected = selectedFrames.max() {
@@ -147,5 +149,28 @@ struct ViewFinder: View {
         } else {
             selectedFrames.insert(index)
         }
+    }
+
+    func timeString(from offsetX: CGFloat) -> String {
+        // Considering the max offsetX value is UIScreen.main.bounds.maxX * 20 and maps to 10 seconds
+        let totalFrames = min(max(0, Int(gestureManager.offsetX / currentWidth * 300)), 300) // 10s * 30f
+
+        let seconds = totalFrames / 30
+        let minutes = seconds / 60
+        let remainingSeconds = seconds % 60
+        let frames = totalFrames % 30
+
+        return String(format: "%02d:%02d.%02d", minutes, remainingSeconds, frames)
+    }
+
+    func interpolatedValue(for scale: CGFloat, minVal: CGFloat, maxVal: CGFloat) -> CGFloat {
+        let clampedScale = gestureManager.scale
+        let normalizedScale = (clampedScale - minScale) / (maxScale - minScale)
+        let invertedScale = 1 - normalizedScale
+        return minVal + normalizedScale * (maxVal - minVal)
+    }
+
+    var currentWidth: CGFloat {
+        interpolatedValue(for: gestureManager.scale, minVal: (frameWidth * CGFloat(totalFrames)) * (3/10), maxVal: frameWidth * CGFloat(totalFrames))
     }
 }

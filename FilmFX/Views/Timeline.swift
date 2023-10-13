@@ -37,44 +37,41 @@ struct Timeline: View {
     ]
 
     var body: some View {
-        VStack(alignment: .leading, spacing: currentSpacing) {
+        VStack(alignment: .leading, spacing: 3) {
             ForEach(sections.indices, id: \.self) { index in
                 Button(action: {
                     Haptics.shared.play(.light)
                     onTapSection(index: index)
                 }) {
-                    RoundedRectangle(cornerRadius: currentRadius)
+                    RoundedRectangle(cornerRadius: 7)
                         .fill(.yellow)
-                        .frame(width: (currentWidth * sections[index].length) + (frameSpacing * (sections[index].length - 1)) - frameSpacing/2, height: currentTimelineHeight)
+                        .frame(width: (currentWidth * sections[index].length) + (frameSpacing * (sections[index].length - 1)) - frameSpacing/2, height: 43)
                         .overlay(
                             HStack(spacing: 0) {
                                 Image(systemName: "chevron.compact.left")
-                                    .scaleEffect(currentTextSize)
 
                                 ZStack(alignment: .leading) {
-                                    RoundedRectangle(cornerRadius: currentRadius - currentTimelineVerticalPadding)
+                                    RoundedRectangle(cornerRadius: 4)
                                         .fill(.black.opacity(0.39))
 
                                     HStack(spacing: 7) {
                                         Image(systemName: sections[index].icon)
-                                            .font(.body.weight(.medium))
+                                            .font(.callout.weight(.medium))
                                             .symbolRenderingMode(.hierarchical)
 
                                         Text(sections[index].text)
                                             .font(.subheadline.weight(.medium))
                                     }
                                     .padding(.horizontal, 10)
-                                    .scaleEffect(currentTextSize, anchor: .leading)
                                 }
-                                .padding(.vertical, currentTimelineVerticalPadding)
-                                .padding(.horizontal, currentTimelineHorizontalPadding)
+                                .padding(.vertical, 3)
+                                .padding(.horizontal, 10)
 
                                 Image(systemName: "chevron.compact.right")
-                                    .scaleEffect(currentTextSize)
                             }
-                                .font(.title3.weight(.semibold))
-                                .foregroundColor(.black)
-                                .padding(.horizontal, currentTimelineHorizontalPadding)
+                            .font(.title3.weight(.semibold))
+                            .foregroundColor(.black)
+                            .padding(.horizontal, 10)
                         )
                         .opacity(selectionManager.selectedSectionIndex == index ? 1.0 : 0.39)
                         .offset(x: (frameSpacing + currentWidth) * sections[index].frameOffset)
@@ -122,29 +119,5 @@ struct Timeline: View {
 
     var currentWidth: CGFloat {
         interpolatedValue(for: gestureManager.scale, minVal: frameWidth * minScale, maxVal: frameWidth)
-    }
-
-    var currentTimelineHeight: CGFloat {
-        interpolatedValue(for: gestureManager.scale, minVal: 39, maxVal: 39)
-    }
-
-    var currentTimelineHorizontalPadding: CGFloat {
-        interpolatedValue(for: gestureManager.scale, minVal: 5, maxVal: 5)
-    }
-
-    var currentTimelineVerticalPadding: CGFloat {
-        interpolatedValue(for: gestureManager.scale, minVal: 2, maxVal: 2)
-    }
-
-    var currentTextSize: CGFloat {
-        interpolatedValue(for: gestureManager.scale, minVal: 0.95, maxVal: 0.95)
-    }
-
-    var currentRadius: CGFloat {
-        interpolatedValue(for: gestureManager.scale, minVal: 7, maxVal: 7)
-    }
-
-    var currentSpacing: CGFloat {
-        interpolatedValue(for: gestureManager.scale, minVal: 3, maxVal: 3)
     }
 }

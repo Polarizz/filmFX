@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		D42745992AD8B7F7005AEA7E /* Timeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = D42745982AD8B7F7005AEA7E /* Timeline.swift */; };
 		D427459B2AD8B984005AEA7E /* Haptics.swift in Sources */ = {isa = PBXBuildFile; fileRef = D427459A2AD8B984005AEA7E /* Haptics.swift */; };
+		D42A88122AD952F9009A80C9 /* SFCamera.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D42A88112AD952F9009A80C9 /* SFCamera.ttf */; };
+		D42A88152AD95580009A80C9 /* UIConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = D42A88142AD95580009A80C9 /* UIConstants.swift */; };
 		D44BB3502AD736A50009AC4F /* FilmFXApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D44BB34F2AD736A50009AC4F /* FilmFXApp.swift */; };
 		D44BB3522AD736A50009AC4F /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D44BB3512AD736A50009AC4F /* ContentView.swift */; };
 		D44BB3542AD736A60009AC4F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D44BB3532AD736A60009AC4F /* Assets.xcassets */; };
@@ -24,6 +26,9 @@
 /* Begin PBXFileReference section */
 		D42745982AD8B7F7005AEA7E /* Timeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Timeline.swift; sourceTree = "<group>"; };
 		D427459A2AD8B984005AEA7E /* Haptics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Haptics.swift; sourceTree = "<group>"; };
+		D42A88102AD95207009A80C9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		D42A88112AD952F9009A80C9 /* SFCamera.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = SFCamera.ttf; sourceTree = "<group>"; };
+		D42A88142AD95580009A80C9 /* UIConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIConstants.swift; sourceTree = "<group>"; };
 		D44BB34C2AD736A50009AC4F /* FilmFX.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FilmFX.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D44BB34F2AD736A50009AC4F /* FilmFXApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilmFXApp.swift; sourceTree = "<group>"; };
 		D44BB3512AD736A50009AC4F /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -48,6 +53,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		D42A88132AD95362009A80C9 /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				D42A88112AD952F9009A80C9 /* SFCamera.ttf */,
+			);
+			path = Fonts;
+			sourceTree = "<group>";
+		};
 		D44BB3432AD736A50009AC4F = {
 			isa = PBXGroup;
 			children = (
@@ -67,12 +80,15 @@
 		D44BB34E2AD736A50009AC4F /* FilmFX */ = {
 			isa = PBXGroup;
 			children = (
+				D42A88102AD95207009A80C9 /* Info.plist */,
 				D44BB34F2AD736A50009AC4F /* FilmFXApp.swift */,
+				D42A88132AD95362009A80C9 /* Fonts */,
 				D44BB3512AD736A50009AC4F /* ContentView.swift */,
 				D44BB35D2AD737010009AC4F /* Views */,
 				D44BB3532AD736A60009AC4F /* Assets.xcassets */,
 				D44BB3552AD736A60009AC4F /* Preview Content */,
 				D455DDFE2AD74BC6003C5EFE /* SafeArea.swift */,
+				D42A88142AD95580009A80C9 /* UIConstants.swift */,
 				D427459A2AD8B984005AEA7E /* Haptics.swift */,
 				D4A798EA2AD89793009E6733 /* ButtonStyles.swift */,
 			);
@@ -167,6 +183,7 @@
 			files = (
 				D44BB3572AD736A60009AC4F /* Preview Assets.xcassets in Resources */,
 				D44BB3542AD736A60009AC4F /* Assets.xcassets in Resources */,
+				D42A88122AD952F9009A80C9 /* SFCamera.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -185,6 +202,7 @@
 				D44BB3522AD736A50009AC4F /* ContentView.swift in Sources */,
 				D44BB3502AD736A50009AC4F /* FilmFXApp.swift in Sources */,
 				D4A798EB2AD89793009E6733 /* ButtonStyles.swift in Sources */,
+				D42A88152AD95580009A80C9 /* UIConstants.swift in Sources */,
 				D4A798E42AD88EF4009E6733 /* ZoomAndPanView.swift in Sources */,
 				D4A798E72AD88F0F009E6733 /* FrameRectangle.swift in Sources */,
 			);
@@ -323,6 +341,7 @@
 				DEVELOPMENT_TEAM = C4DBP4HKWQ;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = FilmFX/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -355,6 +374,7 @@
 				DEVELOPMENT_TEAM = C4DBP4HKWQ;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = FilmFX/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
