@@ -50,28 +50,33 @@ struct Timeline: View {
                             HStack(spacing: 0) {
                                 Image(systemName: "chevron.compact.left")
 
-                                ZStack(alignment: .leading) {
-                                    RoundedRectangle(cornerRadius: 4)
-                                        .fill(.black.opacity(0.39))
+                                HStack(spacing: 7) {
+                                    Image(systemName: sections[index].icon)
+                                        .font(.callout.weight(.medium))
+                                        .symbolRenderingMode(.hierarchical)
 
-                                    HStack(spacing: 7) {
-                                        Image(systemName: sections[index].icon)
-                                            .font(.callout.weight(.medium))
-                                            .symbolRenderingMode(.hierarchical)
+                                    Text(sections[index].text)
+                                        .font(.custom("SFCamera", size: UIConstants.callout))
+                                        .tracking(0.3)
+                                        .lineLimit(1)
+                                        .fixedSize(horizontal: false, vertical: true)
 
-                                        Text(sections[index].text)
-                                            .font(.subheadline.weight(.medium))
-                                    }
-                                    .padding(.horizontal, 10)
+                                    Spacer()
                                 }
-                                .padding(.vertical, 3)
                                 .padding(.horizontal, 10)
+                                .padding(.vertical, 9)
+                                .offset(x: gestureManager.offsetX > 26 ? gestureManager.offsetX - 26 : 0)
+                                .background(.black.opacity(0.39))
+                                .clipShape(
+                                    RoundedRectangle(cornerRadius: 4)
+                                )
+                                .padding(.horizontal, 7)
 
                                 Image(systemName: "chevron.compact.right")
                             }
                             .font(.title3.weight(.semibold))
                             .foregroundColor(.black)
-                            .padding(.horizontal, 10)
+                            .padding(.horizontal, 7)
                         )
                         .opacity(selectionManager.selectedSectionIndex == index ? 1.0 : 0.39)
                         .offset(x: (frameSpacing + currentWidth) * sections[index].frameOffset)

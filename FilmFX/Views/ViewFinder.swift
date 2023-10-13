@@ -73,7 +73,7 @@ struct ViewFinder: View {
             Group {
                 if selectionManager.selectedSectionIndex != nil {
                     ZStack(alignment: .bottom) {
-                        VStack(spacing: 5) {
+                        VStack(spacing: 7) {
                             Text(String(min(50, max(-50, scrollManager.positionID))))
                                 .font(.custom("SFCamera", size: UIConstants.callout))
                                 .tracking(1)
@@ -104,6 +104,15 @@ struct ViewFinder: View {
                         }
                         .frame(height: 92)
                     }
+                    .overlay(
+                        Text("Strength")
+                            .font(.custom("SFCamera", size: UIConstants.subheadline))
+                            .tracking(1)
+                            .foregroundColor(scrollManager.positionID == 0 ? .white : .yellow)
+                            .offset(y: 2)
+                            .padding(.trailing, 16)
+                        , alignment: .topTrailing
+                    )
                 }
             }
             , alignment: .bottom
@@ -112,7 +121,7 @@ struct ViewFinder: View {
             VStack(spacing: 9) {
                 if selectedFrames.count > 0 {
                     Text("^[\(selectedFrames.count) FRAME](inflect: true) SELECTED")
-                        .font(.system(size: UIConstants.footnote).weight(.medium))
+                        .font(.custom("SFCamera", size: UIConstants.subheadline))
                         .foregroundColor(.black)
                         .padding(.vertical, 5)
                         .padding(.horizontal, 7)
@@ -166,7 +175,6 @@ struct ViewFinder: View {
     func interpolatedValue(for scale: CGFloat, minVal: CGFloat, maxVal: CGFloat) -> CGFloat {
         let clampedScale = gestureManager.scale
         let normalizedScale = (clampedScale - minScale) / (maxScale - minScale)
-        let invertedScale = 1 - normalizedScale
         return minVal + normalizedScale * (maxVal - minVal)
     }
 

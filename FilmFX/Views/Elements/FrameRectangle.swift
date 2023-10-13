@@ -28,7 +28,7 @@ struct FrameRectangle: View {
                     rect.opacity(0)
 
                     Text(String(number))
-                        .font(.system(size: currentFontSize))
+                        .font(.custom("SFCamera", size: currentFontSize))
                         .foregroundColor(isSelected ? .yellow : .gray.opacity(0.5))
                         .animation(.smooth(duration: 0.3), value: gestureManager.scale)
                         .padding(.horizontal, currentLeadingPadding)
@@ -70,7 +70,7 @@ struct FrameRectangle: View {
     }
 
     var currentFontSize: CGFloat {
-        interpolatedValue(for: gestureManager.scale, minVal: 16, maxVal: 43)
+        interpolatedValue(for: gestureManager.scale, minVal: 17, maxVal: 52)
     }
 
     var currentSpacing: CGFloat {
