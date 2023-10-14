@@ -23,6 +23,14 @@ struct BounceButtonStyle: ButtonStyle {
     }
 }
 
+struct PlayButtonStyle: ButtonStyle {
+    func makeBody(configuration: Self.Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? 0.8 : 1)
+            .animation(.snappy(duration: 0.3, extraBounce: 0.3), value: configuration.isPressed)
+    }
+}
+
 struct ShrinkButtonStyle: ButtonStyle {
     func makeBody(configuration: Self.Configuration) -> some View {
         configuration.label

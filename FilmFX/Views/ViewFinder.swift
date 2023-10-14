@@ -44,7 +44,7 @@ struct ViewFinder: View {
         .ignoresSafeArea(.container)
         .background(.black)
         .overlay(
-            Timeline(gestureManager: gestureManager, dragState: dragState, selectionManager: selectionManager, frameSpacing: frameSpacing, selectedFrames: $selectedFrames)
+            Timeline(pageModel: pageModel, gestureManager: gestureManager, dragState: dragState, selectionManager: selectionManager, frameSpacing: frameSpacing, selectedFrames: $selectedFrames)
                 .offset(y: currentOffset)
             , alignment: .topLeading
         )
@@ -105,7 +105,6 @@ struct ViewFinder: View {
                             Spacer()
                         }
                         .foregroundColor(.white)
-                        .padding(.bottom, 30)
                     } else {
                         ZStack(alignment: .bottom) {
                             VStack(spacing: 7) {
@@ -163,33 +162,95 @@ struct ViewFinder: View {
                                     .padding(20)
                                     .contentShape(Rectangle())
                             }
-                            .padding(-20)
-                            .buttonStyle(DefaultButtonStyle())
+                                .padding(-20)
+                                .buttonStyle(DefaultButtonStyle())
                             , alignment: .topTrailing
                         )
                     }
                 } else {
-                    VStack(spacing: 50) {
+                    if selectedFrames.count == 0 {
                         HStack(spacing: 60) {
-                            Image(systemName: "backward.frame.fill")
-                                .font(.system(size: UIConstants.title))
+                            Button(action: { }) {
+                                Image(systemName: "backward.frame.fill")
+                                    .font(.system(size: UIConstants.title))
+                                    .contentShape(Rectangle())
+                            }
+                            .buttonStyle(PlayButtonStyle())
 
-                            Image(systemName: "play.fill")
-                                .font(.system(size: UIConstants.largeTitle))
+                            Button(action: { }) {
+                                Image(systemName: "play.fill")
+                                    .font(.system(size: UIConstants.largeTitle))
+                                    .contentShape(Rectangle())
+                            }
+                            .buttonStyle(PlayButtonStyle())
 
-                            Image(systemName: "forward.frame.fill")
-                                .font(.system(size: UIConstants.title))
+                            Button(action: { }) {
+                                Image(systemName: "forward.frame.fill")
+                                    .font(.system(size: UIConstants.title))
+                                    .contentShape(Rectangle())
+                            }
+                            .buttonStyle(PlayButtonStyle())
                         }
                         .foregroundColor(.white.opacity(0.9))
+                    } else {
+                        RoundedRectangle(cornerRadius: 7)
+                            .fill(.gray.opacity(0.39))
+                            .frame(height: 43)
+                            .overlay(
+                                HStack(spacing: 0) {
+                                    HStack(spacing: 7) {
+                                        Image(systemName: "character.cursor.ibeam")
+                                            .font(.system(size: UIConstants.callout).weight(.medium))
+                                            .symbolRenderingMode(.hierarchical)
+                                            .frame(height: 17)
 
-                        Text("Select frames to add effects")
-                            .font(.custom("SFCamera", size: UIConstants.subheadline))
-                            .foregroundColor(.white)
+                                        Group {
+                                            Text("Effect")
+                                                .foregroundColor(.white)
+                                        }
+                                        .font(.custom("SFCamera", size: UIConstants.callout))
+                                        .tracking(0.3)
+                                        .lineLimit(1)
+                                        .fixedSize(horizontal: false, vertical: true)
+
+                                        Spacer()
+                                    }
+                                    .padding(.horizontal, 10)
+                                    .padding(.vertical, 10)
+                                    .background(Color(.tertiarySystemFill))
+                                    .clipShape(
+                                        RoundedRectangle(cornerRadius: 4)
+                                    )
+                                    .padding(.trailing, 7)
+
+                                    Image(systemName: "plus.circle.fill")
+                                }
+                                    .foregroundColor(.white)
+                                    .font(.title3.weight(.semibold))
+                                    .padding(.leading, 2)
+                                    .padding(.trailing, 7)
+                            )
+                            .padding(.horizontal, 16)
                     }
-                    .padding(.bottom, 3)
                 }
             }
+            .padding(.bottom, 70)
             .animation(.smooth(duration: 0.3), value: selectionManager.selectedSectionIndex)
+            , alignment: .bottom
+        )
+        .overlay(
+            ZStack {
+                Text("Select frames to add effects")
+                    .font(.custom("SFCamera", size: UIConstants.subheadline))
+                    .foregroundColor(.white)
+                    .opacity(pageModel.showTip ? 1 : 0)
+
+                Image(systemName: "chevron.up")
+                    .font(.system(size: UIConstants.body).weight(.medium))
+                    .foregroundColor(.white)
+                    .opacity(!pageModel.showTip ? 1 : 0)
+            }
+            .padding(.bottom, 3)
             , alignment: .bottom
         )
         .overlay(
@@ -221,7 +282,7 @@ struct ViewFinder: View {
                             .buttonStyle(DefaultButtonStyle())
                         }
                     }
-                    .animation(.smooth(duration: 0.3), value: selectionManager.selectedSectionIndex)
+                        .animation(.smooth(duration: 0.3), value: selectionManager.selectedSectionIndex)
                     , alignment: .trailing
                 )
                 .padding(.bottom, 5)
@@ -267,6 +328,8 @@ struct ViewFinder: View {
         }
 
         selectionManager.selectedSectionIndex = nil
+
+        withAnimation(.smooth(duration: 0.3)) { pageModel.showTip = false }
     }
 
     func timeString(from offsetX: CGFloat) -> String {

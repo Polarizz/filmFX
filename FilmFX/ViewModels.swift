@@ -11,6 +11,7 @@ import Observation
 @Observable
 class PageModel: ObservableObject {
     public var currentPage: Int = 0
+    public var showTip = true
 }
 
 @Observable

@@ -16,6 +16,7 @@ struct TimelineSection {
 
 struct Timeline: View {
 
+    @ObservedObject var pageModel: PageModel
     @ObservedObject var gestureManager: GestureManager
     @ObservedObject var dragState: DragState
     @ObservedObject var selectionManager: TimelineSelectionManager
@@ -43,8 +44,8 @@ struct Timeline: View {
                 Button(action: {
                     Haptics.shared.play(.light)
                     onTapSection(index: index)
-
                     selectedFrames.removeAll()
+                    withAnimation(.smooth(duration: 0.3)) { pageModel.showTip = false }
                 }) {
                     RoundedRectangle(cornerRadius: 7)
                         .fill(.yellow)
@@ -55,8 +56,9 @@ struct Timeline: View {
 
                                 HStack(spacing: 7) {
                                     Image(systemName: sections[index].icon)
-                                        .font(.callout.weight(.medium))
+                                        .font(.system(size: UIConstants.callout).weight(.medium))
                                         .symbolRenderingMode(.hierarchical)
+                                        .frame(height: 17)
 
                                     Group {
                                         Text(sections[index].text + " • ")

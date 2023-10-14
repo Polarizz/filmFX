@@ -40,11 +40,10 @@ struct FrameRectangle: View {
                 Haptics.shared.play(.light)
                 withAnimation(.smooth(duration: 0.3)) { onTap() }
             }
+            .wiggling(isSelected, amplitude: wiggleAmplitude)
     }
 
     var rect: some View {
-//        RoundedRectangle(cornerRadius: currentCornerRadius)
-
         Image("poppy")
             .antialiased(true)
             .resizable()
@@ -55,14 +54,6 @@ struct FrameRectangle: View {
             .overlay(
                 RoundedRectangle(cornerRadius: currentCornerRadius)
                     .strokeBorder(isSelected ? .yellow : .gray.opacity(0.2), lineWidth: isSelected ? currentLineWidth : currentLineWidth/2)
-            )
-            .overlay(
-                Circle()
-                    .fill(.yellow)
-                    .frame(width: currentCircleSize, height: currentCircleSize)
-                    .offset(y: -currentCircleOffset)
-                    .opacity(isSelected ? 1 : 0)
-                , alignment: .top
             )
     }
 
@@ -99,5 +90,9 @@ struct FrameRectangle: View {
 
     var currentCircleOffset: CGFloat {
         interpolatedValue(for: gestureManager.scale, minVal: 18, maxVal: 45)
+    }
+
+    var wiggleAmplitude: CGFloat {
+        interpolatedValue(for: gestureManager.scale, minVal: 1, maxVal: 2)
     }
 }
