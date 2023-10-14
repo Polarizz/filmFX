@@ -28,6 +28,7 @@ struct ViewFinder: View {
     @State var selectedFrames = Set<Int>()
     @State var gestureOffsetX: CGFloat = 0.0
     @State var lastGestureOffsetX: CGFloat = 0.0
+    @State var editStrength = false
 
     var body: some View {
         ZoomAndPanView(totalFrames: CGFloat(totalFrames), frameSpacing: frameSpacing, gestureManager: gestureManager, pageModel: pageModel, dragState: dragState) {
@@ -50,61 +51,123 @@ struct ViewFinder: View {
         .overlay(
             Group {
                 if selectionManager.selectedSectionIndex != nil {
-                    ZStack(alignment: .bottom) {
-                        VStack(spacing: 7) {
-                            Text(String(min(50, max(-50, scrollManager.positionID))))
-                                .font(.custom("SFCamera", size: UIConstants.callout))
-                                .tracking(1)
-                                .foregroundColor(scrollManager.positionID == 0 ? .white : .yellow)
+                    if !editStrength {
+                        HStack(alignment: .top) {
+                            Spacer()
+                            Button(action: { withAnimation(.smooth(duration: 0.3)) { editStrength = true } }) {
+                                VStack(spacing: 2) {
+                                    Text("Strength".uppercased())
+                                        .font(.custom("SFCamera", size: UIConstants.subheadline))
 
-                            Capsule()
-                                .fill(scrollManager.positionID == 0 ? .white : .yellow)
-                                .frame(width: 1, height: 25)
+                                    Text("9")
+                                        .font(.custom("SFCamera", size: UIConstants.subheadline))
+                                        .padding(.bottom, 3)
+
+                                    HStack(alignment: .bottom, spacing: 7) {
+                                        ForEach(0..<7, id: \.self) { index in
+                                            Capsule()
+                                                .fill(.gray.opacity(0.65))
+                                                .frame(width: 1, height: (index % 3 == 0) ? 9 : 6)
+                                        }
+                                    }
+                                }
+                                .contentShape(Rectangle())
+                            }
+                            .buttonStyle(DefaultButtonStyle())
+                            Spacer()
+                            VStack(spacing: 7) {
+                                Text("Edit".uppercased())
+                                    .font(.custom("SFCamera", size: UIConstants.subheadline))
+
+                                Image(systemName: "character.cursor.ibeam")
+                                    .font(.system(size: UIConstants.footnote))
+                                    .frame(height: 14)
+                            }
+                            Spacer()
+                            VStack(spacing: 7) {
+                                Text("Duplicate".uppercased())
+                                    .font(.custom("SFCamera", size: UIConstants.subheadline))
+
+                                Image(systemName: "doc.on.doc")
+                                    .font(.system(size: UIConstants.footnote))
+                                    .frame(height: 14)
+                            }
+                            Spacer()
+                            VStack(spacing: 7) {
+                                Text("Delete".uppercased())
+                                    .font(.custom("SFCamera", size: UIConstants.subheadline))
+
+                                Image(systemName: "delete.backward")
+                                    .font(.system(size: UIConstants.footnote))
+                                    .frame(height: 14)
+                            }
+                            .foregroundColor(.red)
+                            Spacer()
                         }
-                        .offset(y: -30)
+                        .foregroundColor(.white)
+                        .padding(.bottom, 30)
+                    } else {
+                        ZStack(alignment: .bottom) {
+                            VStack(spacing: 7) {
+                                Text(String(min(50, max(-50, scrollManager.positionID))))
+                                    .font(.custom("SFCamera", size: UIConstants.callout))
+                                    .tracking(1)
+                                    .foregroundColor(scrollManager.positionID == 0 ? .white : .yellow)
 
-                        ScrollViewWrapper(scrollManager: scrollManager) {
-                            HStack(spacing: 9) {
-                                ForEach(0..<4, id: \.self) { _ in
+                                Capsule()
+                                    .fill(scrollManager.positionID == 0 ? .white : .yellow)
+                                    .frame(width: 1, height: 25)
+                            }
+                            .offset(y: -30)
+
+                            ScrollViewWrapper(scrollManager: scrollManager) {
+                                HStack(spacing: 9) {
+                                    ForEach(0..<4, id: \.self) { _ in
+                                        Capsule()
+                                            .fill(Color.white)
+                                            .frame(width: 1, height: 11)
+                                        ForEach(0..<9, id: \.self) { _ in
+                                            Capsule()
+                                                .fill(Color.gray.opacity(0.5))
+                                                .frame(width: 1, height: 10)
+                                        }
+                                    }
                                     Capsule()
                                         .fill(Color.white)
                                         .frame(width: 1, height: 11)
-                                    ForEach(0..<9, id: \.self) { _ in
-                                        Capsule()
-                                            .fill(Color.gray.opacity(0.5))
-                                            .frame(width: 1, height: 10)
-                                    }
                                 }
-                                Capsule()
-                                    .fill(Color.white)
-                                    .frame(width: 1, height: 11)
+                                .overlay(
+                                    Circle()
+                                        .fill(.white)
+                                        .frame(width: 5, height: 5)
+                                        .offset(y: 15)
+                                    , alignment: .bottom
+                                )
                             }
-                            .overlay(
-                                Circle()
-                                    .fill(.white)
-                                    .frame(width: 5, height: 5)
-                                    .offset(y: 15)
-                                , alignment: .bottom
-                            )
+                            .frame(height: 72)
+                            .contentShape(Rectangle())
+                            .mask(LinearGradient(gradient: Gradient(stops: [
+                                .init(color: .clear, location: 0),
+                                .init(color: .black, location: 0.15),
+                                .init(color: .black, location: 0.85),
+                                .init(color: .clear, location: 1)
+                            ]), startPoint: .leading, endPoint: .trailing))
                         }
-                        .frame(height: 72)
-                        .contentShape(Rectangle())
-                        .mask(LinearGradient(gradient: Gradient(stops: [
-                            .init(color: .clear, location: 0),
-                            .init(color: .black, location: 0.15),
-                            .init(color: .black, location: 0.85),
-                            .init(color: .clear, location: 1)
-                        ]), startPoint: .leading, endPoint: .trailing))
+                        .overlay(
+                            Button(action: { withAnimation(.smooth(duration: 0.3)) { editStrength = false } }) {
+                                Text("Strength".uppercased())
+                                    .font(.custom("SFCamera", size: UIConstants.subheadline))
+                                    .foregroundColor(scrollManager.positionID == 0 ? .white : .yellow)
+                                    .offset(y: -8)
+                                    .padding(.trailing, 16)
+                                    .padding(20)
+                                    .contentShape(Rectangle())
+                            }
+                            .padding(-20)
+                            .buttonStyle(DefaultButtonStyle())
+                            , alignment: .topTrailing
+                        )
                     }
-                    .overlay(
-                        Text("Strength")
-                            .font(.custom("SFCamera", size: UIConstants.subheadline))
-                            .tracking(1)
-                            .foregroundColor(scrollManager.positionID == 0 ? .white : .yellow)
-                            .offset(y: -8)
-                            .padding(.trailing, 16)
-                        , alignment: .topTrailing
-                    )
                 } else {
                     Text("Select frames to add effects")
                         .font(.custom("SFCamera", size: UIConstants.subheadline))
@@ -147,7 +210,7 @@ struct ViewFinder: View {
                     .animation(.smooth(duration: 0.3), value: selectionManager.selectedSectionIndex)
                     , alignment: .trailing
                 )
-                .padding(.bottom, 3)
+                .padding(.bottom, 5)
 
                 if selectedFrames.count > 0 {
                     Text("^[\(selectedFrames.count) FRAME](inflect: true) SELECTED")
