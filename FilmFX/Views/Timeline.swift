@@ -22,6 +22,8 @@ struct Timeline: View {
 
     var frameSpacing: CGFloat
 
+    @Binding var selectedFrames: Set<Int>
+
     let frameWidth: CGFloat = UIScreen.main.bounds.maxX
     let totalFrames: Int = 20
     let maxCornerRadius: CGFloat = 19
@@ -42,6 +44,8 @@ struct Timeline: View {
                 Button(action: {
                     Haptics.shared.play(.light)
                     onTapSection(index: index)
+
+                    selectedFrames.removeAll()
                 }) {
                     RoundedRectangle(cornerRadius: 7)
                         .fill(.yellow)
@@ -69,7 +73,7 @@ struct Timeline: View {
                                     Spacer()
                                 }
                                 .padding(.horizontal, 10)
-                                .padding(.vertical, 9)
+                                .padding(.vertical, 10)
                                 .offset(x: gestureManager.offsetX > 26 + ((frameSpacing + currentWidth) * sections[index].frameOffset) ? gestureManager.offsetX - 26 - ((frameSpacing + currentWidth) * sections[index].frameOffset) : 0)
                                 .background(.black.opacity(0.39))
                                 .clipShape(

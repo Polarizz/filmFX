@@ -43,7 +43,7 @@ struct ViewFinder: View {
         .ignoresSafeArea(.container)
         .background(.black)
         .overlay(
-            Timeline(gestureManager: gestureManager, dragState: dragState, selectionManager: selectionManager, frameSpacing: frameSpacing)
+            Timeline(gestureManager: gestureManager, dragState: dragState, selectionManager: selectionManager, frameSpacing: frameSpacing, selectedFrames: $selectedFrames)
                 .offset(y: 390)
             , alignment: .topLeading
         )
@@ -79,6 +79,13 @@ struct ViewFinder: View {
                                     .fill(Color.white)
                                     .frame(width: 1, height: 11)
                             }
+                            .overlay(
+                                Circle()
+                                    .fill(.white)
+                                    .frame(width: 5, height: 5)
+                                    .offset(y: 15)
+                                , alignment: .bottom
+                            )
                         }
                         .frame(height: 72)
                         .contentShape(Rectangle())
@@ -123,6 +130,7 @@ struct ViewFinder: View {
                             Button(action: {
                                 withAnimation(.smooth(duration: 0.3)) {
                                     selectionManager.selectedSectionIndex = nil
+                                    selectedFrames.removeAll()
                                 }
                             }) {
                                 Image(systemName: "checkmark")
@@ -130,7 +138,7 @@ struct ViewFinder: View {
                                     .foregroundStyle(.black)
                                     .padding(.vertical, 9)
                                     .padding(.horizontal, 26)
-                                    .background(.white.opacity(0.9))
+                                    .background(.yellow)
                                     .clipShape(RoundedRectangle(cornerRadius: 39, style: .continuous))
                             }
                             .buttonStyle(DefaultButtonStyle())
@@ -180,6 +188,8 @@ struct ViewFinder: View {
         } else {
             selectedFrames.insert(index)
         }
+
+        selectionManager.selectedSectionIndex = nil
     }
 
     func timeString(from offsetX: CGFloat) -> String {
