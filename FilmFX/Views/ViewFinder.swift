@@ -119,14 +119,21 @@ struct ViewFinder: View {
                 }
                 .overlay(
                     Group {
-                        if selectionManager.selectedSectionIndex != nil {
-                            Image(systemName: "checkmark")
-                                .font(.system(size: UIConstants.subheadline).weight(.medium))
-                                .foregroundStyle(.black)
-                                .padding(.vertical, 9)
-                                .padding(.horizontal, 26)
-                                .background(.white.opacity(0.9))
-                                .clipShape(RoundedRectangle(cornerRadius: 39, style: .continuous))
+                        if selectionManager.selectedSectionIndex != nil || selectedFrames.count > 0 {
+                            Button(action: {
+                                withAnimation(.smooth(duration: 0.3)) {
+                                    selectionManager.selectedSectionIndex = nil
+                                }
+                            }) {
+                                Image(systemName: "checkmark")
+                                    .font(.system(size: UIConstants.subheadline).weight(.medium))
+                                    .foregroundStyle(.black)
+                                    .padding(.vertical, 9)
+                                    .padding(.horizontal, 26)
+                                    .background(.white.opacity(0.9))
+                                    .clipShape(RoundedRectangle(cornerRadius: 39, style: .continuous))
+                            }
+                            .buttonStyle(DefaultButtonStyle())
                         }
                     }
                     .animation(.smooth(duration: 0.3), value: selectionManager.selectedSectionIndex)

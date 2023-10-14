@@ -43,13 +43,27 @@ struct FrameRectangle: View {
     }
 
     var rect: some View {
-        RoundedRectangle(cornerRadius: currentCornerRadius)
-            .fill(Color.white.opacity(0.1))
+//        RoundedRectangle(cornerRadius: currentCornerRadius)
+
+        Image("poppy")
+            .antialiased(true)
+            .resizable()
+            .aspectRatio(contentMode: .fill)
+            .frame(width: frameWidth, height: frameWidth * (9/16))
+            .brightness(isSelected ? -0.1 : 0)
+            .clipShape(RoundedRectangle(cornerRadius: currentCornerRadius))
             .overlay(
                 RoundedRectangle(cornerRadius: currentCornerRadius)
                     .strokeBorder(isSelected ? .yellow : .gray.opacity(0.2), lineWidth: isSelected ? currentLineWidth : currentLineWidth/2)
             )
-            .frame(width: frameWidth, height: frameWidth * (9/16))
+            .overlay(
+                Circle()
+                    .fill(.yellow)
+                    .frame(width: currentCircleSize, height: currentCircleSize)
+                    .offset(y: -currentCircleOffset)
+                    .opacity(isSelected ? 1 : 0)
+                , alignment: .top
+            )
     }
 
     func interpolatedValue(for scale: CGFloat, minVal: CGFloat, maxVal: CGFloat) -> CGFloat {
@@ -64,9 +78,7 @@ struct FrameRectangle: View {
     }
 
     var currentLineWidth: CGFloat {
-        let m: CGFloat = -2.86
-        let b: CGFloat = 3.86
-        return m * gestureManager.scale + b
+        interpolatedValue(for: gestureManager.scale, minVal: 3, maxVal: 9)
     }
 
     var currentFontSize: CGFloat {
@@ -79,5 +91,13 @@ struct FrameRectangle: View {
 
     var currentLeadingPadding: CGFloat {
         interpolatedValue(for: gestureManager.scale, minVal: 5, maxVal: 3)
+    }
+
+    var currentCircleSize: CGFloat {
+        interpolatedValue(for: gestureManager.scale, minVal: 5, maxVal: 15)
+    }
+
+    var currentCircleOffset: CGFloat {
+        interpolatedValue(for: gestureManager.scale, minVal: 18, maxVal: 45)
     }
 }

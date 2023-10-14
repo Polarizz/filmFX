@@ -7,6 +7,14 @@
 
 import SwiftUI
 
+struct DefaultButtonStyle: ButtonStyle {
+    func makeBody(configuration: Self.Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? 0.93 : 1)
+            .animation(.snappy(duration: 0.3, extraBounce: 0.3), value: configuration.isPressed)
+    }
+}
+
 struct BounceButtonStyle: ButtonStyle {
     func makeBody(configuration: Self.Configuration) -> some View {
         configuration.label
