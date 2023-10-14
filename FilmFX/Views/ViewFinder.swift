@@ -99,43 +99,40 @@ struct ViewFinder: View {
                         , alignment: .topTrailing
                     )
                 } else {
-//                    HStack(spacing: 16) {
-//                        Image(systemName: "magnifyingglass")
-//
-//                        HStack(spacing: 0) {
-//                            Image(systemName: "magnifyingglass")
-//                            Spacer()
-//                            Text("Search or enter website")
-//                            Spacer()
-//                            Image(systemName: "line.3.horizontal")
-//                        }
-//                        .font(.body)
-//                        .padding(13)
-//                        .foregroundColor(.gray.opacity(0.9))
-//                        .background(Color(.tertiarySystemFill))
-//                        .clipShape(RoundedRectangle(cornerRadius: 11, style: .continuous))
-//                        .shadow(color: Color.black.opacity(0.1), radius: 20, y: 5)
-//
-//                        Image(systemName: "ellipsis")
-//                    }
-//                    .padding(.top, 9  )
-//                    .padding([.horizontal, .bottom], 16)
+                    Text("Select frames to add effects")
+                        .font(.custom("SFCamera", size: UIConstants.subheadline))
+                        .foregroundColor(.white)
+                        .padding(.bottom, 3)
                 }
             }
             .animation(.smooth(duration: 0.3), value: selectionManager.selectedSectionIndex)
-//            .background(Blur(.prominent).ignoresSafeArea())
-//            .overlay(
-//                Bar().opacity(0.5)
-//                , alignment: .top
-//            )
             , alignment: .bottom
         )
         .overlay(
             VStack(spacing: 9) {
-                Text("Untitled Video")
-                    .font(.custom("SFCamera", size: UIConstants.body))
-                    .foregroundColor(.white)
-                    .padding(.bottom, 5)
+                HStack {
+                    Spacer()
+                    Text("Untitled Video")
+                        .font(.custom("SFCamera", size: UIConstants.body))
+                        .foregroundColor(.white)
+                    Spacer()
+                }
+                .overlay(
+                    Group {
+                        if selectionManager.selectedSectionIndex != nil {
+                            Image(systemName: "checkmark")
+                                .font(.system(size: UIConstants.subheadline).weight(.medium))
+                                .foregroundStyle(.black)
+                                .padding(.vertical, 9)
+                                .padding(.horizontal, 26)
+                                .background(.white.opacity(0.9))
+                                .clipShape(RoundedRectangle(cornerRadius: 39, style: .continuous))
+                        }
+                    }
+                    .animation(.smooth(duration: 0.3), value: selectionManager.selectedSectionIndex)
+                    , alignment: .trailing
+                )
+                .padding(.bottom, 3)
 
                 if selectedFrames.count > 0 {
                     Text("^[\(selectedFrames.count) FRAME](inflect: true) SELECTED")
