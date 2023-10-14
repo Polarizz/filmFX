@@ -22,6 +22,8 @@
 		D4A798E72AD88F0F009E6733 /* FrameRectangle.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4A798E62AD88F0F009E6733 /* FrameRectangle.swift */; };
 		D4A798EB2AD89793009E6733 /* ButtonStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4A798EA2AD89793009E6733 /* ButtonStyles.swift */; };
 		D4DE90F52AD9264400830634 /* ScrollViewWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4DE90F42AD9264400830634 /* ScrollViewWrapper.swift */; };
+		D4E4E0672ADA428400ACB597 /* Blur.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4E4E0662ADA428400ACB597 /* Blur.swift */; };
+		D4E4E0692ADA435800ACB597 /* Bar.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4E4E0682ADA435800ACB597 /* Bar.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -42,6 +44,8 @@
 		D4A798E62AD88F0F009E6733 /* FrameRectangle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrameRectangle.swift; sourceTree = "<group>"; };
 		D4A798EA2AD89793009E6733 /* ButtonStyles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonStyles.swift; sourceTree = "<group>"; };
 		D4DE90F42AD9264400830634 /* ScrollViewWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollViewWrapper.swift; sourceTree = "<group>"; };
+		D4E4E0662ADA428400ACB597 /* Blur.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Blur.swift; sourceTree = "<group>"; };
+		D4E4E0682ADA435800ACB597 /* Bar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bar.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -91,6 +95,8 @@
 				D44BB3552AD736A60009AC4F /* Preview Content */,
 				D455DDFE2AD74BC6003C5EFE /* SafeArea.swift */,
 				D413BF2B2ADA357900B93B8A /* ViewModels.swift */,
+				D4E4E0662ADA428400ACB597 /* Blur.swift */,
+				D4E4E0682ADA435800ACB597 /* Bar.swift */,
 				D42A88142AD95580009A80C9 /* UIConstants.swift */,
 				D427459A2AD8B984005AEA7E /* Haptics.swift */,
 				D4A798EA2AD89793009E6733 /* ButtonStyles.swift */,
@@ -198,11 +204,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				D427459B2AD8B984005AEA7E /* Haptics.swift in Sources */,
+				D4E4E0692ADA435800ACB597 /* Bar.swift in Sources */,
 				D42745992AD8B7F7005AEA7E /* Timeline.swift in Sources */,
 				D44BB35F2AD737080009AC4F /* ViewFinder.swift in Sources */,
 				D4DE90F52AD9264400830634 /* ScrollViewWrapper.swift in Sources */,
 				D455DDFF2AD74BC6003C5EFE /* SafeArea.swift in Sources */,
 				D44BB3522AD736A50009AC4F /* ContentView.swift in Sources */,
+				D4E4E0672ADA428400ACB597 /* Blur.swift in Sources */,
 				D44BB3502AD736A50009AC4F /* FilmFXApp.swift in Sources */,
 				D4A798EB2AD89793009E6733 /* ButtonStyles.swift in Sources */,
 				D42A88152AD95580009A80C9 /* UIConstants.swift in Sources */,

@@ -31,7 +31,7 @@ struct ViewFinder: View {
 
     var body: some View {
         ZoomAndPanView(totalFrames: CGFloat(totalFrames), frameSpacing: frameSpacing, gestureManager: gestureManager, pageModel: pageModel, dragState: dragState) {
-            HStack(alignment: .top, spacing: frameSpacing) {
+            LazyHStack(alignment: .top, spacing: frameSpacing) {
                 ForEach(0..<totalFrames, id: \.self) { index in
                     FrameRectangle(gestureManager: gestureManager, number: index + 1, frameWidth: frameWidth, isSelected: selectedFrames.contains(index)) {
                         handleTap(for: index)
@@ -61,7 +61,7 @@ struct ViewFinder: View {
                                 .fill(scrollManager.positionID == 0 ? .white : .yellow)
                                 .frame(width: 1, height: 25)
                         }
-                        .offset(y: -40)
+                        .offset(y: -30)
 
                         ScrollViewWrapper(scrollManager: scrollManager) {
                             HStack(spacing: 9) {
@@ -77,10 +77,17 @@ struct ViewFinder: View {
                                 }
                                 Capsule()
                                     .fill(Color.white)
-                                    .frame(width: 1, height: 12)
+                                    .frame(width: 1, height: 11)
                             }
                         }
-                        .frame(height: 92)
+                        .frame(height: 72)
+                        .contentShape(Rectangle())
+                        .mask(LinearGradient(gradient: Gradient(stops: [
+                            .init(color: .clear, location: 0),
+                            .init(color: .black, location: 0.15),
+                            .init(color: .black, location: 0.85),
+                            .init(color: .clear, location: 1)
+                        ]), startPoint: .leading, endPoint: .trailing))
                     }
                     .overlay(
                         Text("Strength")
@@ -91,12 +98,45 @@ struct ViewFinder: View {
                             .padding(.trailing, 16)
                         , alignment: .topTrailing
                     )
+                } else {
+//                    HStack(spacing: 16) {
+//                        Image(systemName: "magnifyingglass")
+//
+//                        HStack(spacing: 0) {
+//                            Image(systemName: "magnifyingglass")
+//                            Spacer()
+//                            Text("Search or enter website")
+//                            Spacer()
+//                            Image(systemName: "line.3.horizontal")
+//                        }
+//                        .font(.body)
+//                        .padding(13)
+//                        .foregroundColor(.gray.opacity(0.9))
+//                        .background(Color(.tertiarySystemFill))
+//                        .clipShape(RoundedRectangle(cornerRadius: 11, style: .continuous))
+//                        .shadow(color: Color.black.opacity(0.1), radius: 20, y: 5)
+//
+//                        Image(systemName: "ellipsis")
+//                    }
+//                    .padding(.top, 9  )
+//                    .padding([.horizontal, .bottom], 16)
                 }
             }
+            .animation(.smooth(duration: 0.3), value: selectionManager.selectedSectionIndex)
+//            .background(Blur(.prominent).ignoresSafeArea())
+//            .overlay(
+//                Bar().opacity(0.5)
+//                , alignment: .top
+//            )
             , alignment: .bottom
         )
         .overlay(
             VStack(spacing: 9) {
+                Text("Untitled Video")
+                    .font(.custom("SFCamera", size: UIConstants.body))
+                    .foregroundColor(.white)
+                    .padding(.bottom, 5)
+
                 if selectedFrames.count > 0 {
                     Text("^[\(selectedFrames.count) FRAME](inflect: true) SELECTED")
                         .font(.custom("SFCamera", size: UIConstants.subheadline))
@@ -118,8 +158,8 @@ struct ViewFinder: View {
                         .clipShape(RoundedRectangle(cornerRadius: 5, style: .continuous))
                 }
             }
-                .padding(16)
-                .animation(.smooth(duration: 0.3), value: dragState.isDragging)
+            .padding(16)
+            .animation(.smooth(duration: 0.3), value: dragState.isDragging)
             , alignment: .top
         )
     }

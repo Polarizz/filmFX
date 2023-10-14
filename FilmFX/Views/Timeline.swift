@@ -55,11 +55,16 @@ struct Timeline: View {
                                         .font(.callout.weight(.medium))
                                         .symbolRenderingMode(.hierarchical)
 
-                                    Text(sections[index].text)
-                                        .font(.custom("SFCamera", size: UIConstants.callout))
-                                        .tracking(0.3)
-                                        .lineLimit(1)
-                                        .fixedSize(horizontal: false, vertical: true)
+                                    Group {
+                                        Text(sections[index].text + " • ")
+                                            .foregroundColor(.black)
+                                        + Text("9")
+                                            .foregroundColor(.black.opacity(0.5))
+                                    }
+                                    .font(.custom("SFCamera", size: UIConstants.callout))
+                                    .tracking(0.3)
+                                    .lineLimit(1)
+                                    .fixedSize(horizontal: false, vertical: true)
 
                                     Spacer()
                                 }
@@ -74,8 +79,8 @@ struct Timeline: View {
 
                                 Image(systemName: "chevron.compact.right")
                             }
-                            .font(.title3.weight(.semibold))
                             .foregroundColor(.black)
+                            .font(.title3.weight(.semibold))
                             .padding(.horizontal, 7)
                         )
                         .opacity(selectionManager.selectedSectionIndex == index ? 1.0 : 0.39)
