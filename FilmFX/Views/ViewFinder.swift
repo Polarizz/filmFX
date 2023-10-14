@@ -75,7 +75,7 @@ struct ViewFinder: View {
                             }
                             .buttonStyle(DefaultButtonStyle())
                             Spacer()
-                            VStack(spacing: 7) {
+                            VStack(spacing: 9) {
                                 Text("Edit".uppercased())
                                     .font(.custom("SFCamera", size: UIConstants.subheadline))
 
@@ -84,7 +84,7 @@ struct ViewFinder: View {
                                     .frame(height: 14)
                             }
                             Spacer()
-                            VStack(spacing: 7) {
+                            VStack(spacing: 9) {
                                 Text("Duplicate".uppercased())
                                     .font(.custom("SFCamera", size: UIConstants.subheadline))
 
@@ -93,7 +93,7 @@ struct ViewFinder: View {
                                     .frame(height: 14)
                             }
                             Spacer()
-                            VStack(spacing: 7) {
+                            VStack(spacing: 9) {
                                 Text("Delete".uppercased())
                                     .font(.custom("SFCamera", size: UIConstants.subheadline))
 
@@ -169,10 +169,24 @@ struct ViewFinder: View {
                         )
                     }
                 } else {
-                    Text("Select frames to add effects")
-                        .font(.custom("SFCamera", size: UIConstants.subheadline))
-                        .foregroundColor(.white)
-                        .padding(.bottom, 3)
+                    VStack(spacing: 50) {
+                        HStack(spacing: 60) {
+                            Image(systemName: "backward.frame.fill")
+                                .font(.system(size: UIConstants.title))
+
+                            Image(systemName: "play.fill")
+                                .font(.system(size: UIConstants.largeTitle))
+
+                            Image(systemName: "forward.frame.fill")
+                                .font(.system(size: UIConstants.title))
+                        }
+                        .foregroundColor(.white.opacity(0.9))
+
+                        Text("Select frames to add effects")
+                            .font(.custom("SFCamera", size: UIConstants.subheadline))
+                            .foregroundColor(.white)
+                    }
+                    .padding(.bottom, 3)
                 }
             }
             .animation(.smooth(duration: 0.3), value: selectionManager.selectedSectionIndex)

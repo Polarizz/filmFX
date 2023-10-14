@@ -90,7 +90,7 @@ struct FrameRectangle: View {
     }
 
     var currentLeadingPadding: CGFloat {
-        interpolatedValue(for: gestureManager.scale, minVal: 5, maxVal: 3)
+        interpolatedValue(for: gestureManager.scale, minVal: 7, maxVal: 3)
     }
 
     var currentCircleSize: CGFloat {

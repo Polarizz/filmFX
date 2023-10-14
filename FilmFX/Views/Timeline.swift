@@ -34,8 +34,7 @@ struct Timeline: View {
     let sections: [TimelineSection] = [
         TimelineSection(icon: "circle.dotted.circle", text: "Vignette", length: 2, frameOffset: 0),
         TimelineSection(icon: "plusminus.circle", text: "Exposure", length: 3, frameOffset: 0),
-        TimelineSection(icon: "circle.righthalf.filled", text: "Contrast", length: 2, frameOffset: 1),
-        TimelineSection(icon: "thermometer.medium", text: "Temperature", length: 5, frameOffset: 2)
+        TimelineSection(icon: "circle.righthalf.filled", text: "Contrast", length: 2, frameOffset: 1)
     ]
 
     var body: some View {
