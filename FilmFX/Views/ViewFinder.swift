@@ -94,7 +94,7 @@ struct ViewFinder: View {
                             .font(.custom("SFCamera", size: UIConstants.subheadline))
                             .tracking(1)
                             .foregroundColor(scrollManager.positionID == 0 ? .white : .yellow)
-                            .offset(y: 2)
+                            .offset(y: -8)
                             .padding(.trailing, 16)
                         , alignment: .topTrailing
                     )
