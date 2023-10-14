@@ -45,7 +45,7 @@ struct ViewFinder: View {
         .background(.black)
         .overlay(
             Timeline(gestureManager: gestureManager, dragState: dragState, selectionManager: selectionManager, frameSpacing: frameSpacing, selectedFrames: $selectedFrames)
-                .offset(y: 390)
+                .offset(y: currentOffset)
             , alignment: .topLeading
         )
         .overlay(
@@ -275,5 +275,9 @@ struct ViewFinder: View {
 
     var currentWidth: CGFloat {
         interpolatedValue(for: gestureManager.scale, minVal: (frameWidth * CGFloat(totalFrames)) * (3/10), maxVal: frameWidth * CGFloat(totalFrames))
+    }
+
+    var currentOffset: CGFloat {
+        interpolatedValue(for: gestureManager.scale, minVal: 380, maxVal: 385)
     }
 }
