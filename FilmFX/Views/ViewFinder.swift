@@ -7,37 +7,15 @@
 
 import SwiftUI
 
-class PageModel: ObservableObject {
-    @Published var currentPage: Int = 0
-}
-
-class GestureManager: ObservableObject {
-    @Published var scale: CGFloat = 1.0
-    @Published var offsetX: CGFloat = 0
-    @Published var page: CGFloat = 0
-}
-
-class DragState: ObservableObject {
-    @Published var isDragging: Bool = false
-}
-
-class TimelineSelectionManager: ObservableObject {
-    @Published var selectedSectionIndex: Int? = nil
-}
-
-class ScrollManager: ObservableObject {
-    @Published var positionID: Int = 0
-}
-
 struct ViewFinder: View {
 
     @Environment(\.safeAreaInsets) var safeAreaInsets
 
-    @StateObject private var gestureManager = GestureManager()
-    @StateObject private var pageModel = PageModel()
-    @StateObject private var dragState = DragState()
-    @StateObject private var selectionManager = TimelineSelectionManager()
-    @StateObject private var scrollManager = ScrollManager()
+    @State var gestureManager = GestureManager()
+    @State var pageModel = PageModel()
+    @State var dragState = DragState()
+    @State var selectionManager = TimelineSelectionManager()
+    @State var scrollManager = ScrollManager()
 
     let frameWidth: CGFloat = UIScreen.main.bounds.maxX
     let totalFrames: Int = 20

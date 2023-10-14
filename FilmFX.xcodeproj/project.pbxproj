@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D413BF2C2ADA357900B93B8A /* ViewModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = D413BF2B2ADA357900B93B8A /* ViewModels.swift */; };
 		D42745992AD8B7F7005AEA7E /* Timeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = D42745982AD8B7F7005AEA7E /* Timeline.swift */; };
 		D427459B2AD8B984005AEA7E /* Haptics.swift in Sources */ = {isa = PBXBuildFile; fileRef = D427459A2AD8B984005AEA7E /* Haptics.swift */; };
 		D42A88122AD952F9009A80C9 /* SFCamera.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D42A88112AD952F9009A80C9 /* SFCamera.ttf */; };
@@ -24,6 +25,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		D413BF2B2ADA357900B93B8A /* ViewModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModels.swift; sourceTree = "<group>"; };
 		D42745982AD8B7F7005AEA7E /* Timeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Timeline.swift; sourceTree = "<group>"; };
 		D427459A2AD8B984005AEA7E /* Haptics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Haptics.swift; sourceTree = "<group>"; };
 		D42A88102AD95207009A80C9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
@@ -88,6 +90,7 @@
 				D44BB3532AD736A60009AC4F /* Assets.xcassets */,
 				D44BB3552AD736A60009AC4F /* Preview Content */,
 				D455DDFE2AD74BC6003C5EFE /* SafeArea.swift */,
+				D413BF2B2ADA357900B93B8A /* ViewModels.swift */,
 				D42A88142AD95580009A80C9 /* UIConstants.swift */,
 				D427459A2AD8B984005AEA7E /* Haptics.swift */,
 				D4A798EA2AD89793009E6733 /* ButtonStyles.swift */,
@@ -204,6 +207,7 @@
 				D4A798EB2AD89793009E6733 /* ButtonStyles.swift in Sources */,
 				D42A88152AD95580009A80C9 /* UIConstants.swift in Sources */,
 				D4A798E42AD88EF4009E6733 /* ZoomAndPanView.swift in Sources */,
+				D413BF2C2ADA357900B93B8A /* ViewModels.swift in Sources */,
 				D4A798E72AD88F0F009E6733 /* FrameRectangle.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
