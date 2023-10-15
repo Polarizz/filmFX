@@ -24,6 +24,7 @@ struct Timeline: View {
     var frameSpacing: CGFloat
 
     @Binding var selectedFrames: Set<Int>
+    @Binding var editStrength: Bool
 
     let frameWidth: CGFloat = UIScreen.main.bounds.maxX
     let totalFrames: Int = 20
@@ -102,28 +103,31 @@ struct Timeline: View {
     }
 
     private func onTapSection(index: Int) {
-           if selectionManager.selectedSectionIndex == index {
-               // Deselect the section if it's tapped when already selected
-               selectionManager.selectedSectionIndex = nil
-           } else {
-               // Otherwise, select the tapped section
-               selectionManager.selectedSectionIndex = index
-           }
-       }
+        withAnimation(.smooth(duration: 0.3)) {
+            editStrength = false
+        }
 
-       private func isSelected(index: Int) -> Bool {
-           // If no section is selected, treat all as selected
-           guard let selectedSectionIndex = selectionManager.selectedSectionIndex else {
-               return true
-           }
-           // Otherwise, only the selected section is treated as selected
-           return index == selectedSectionIndex
-       }
+        if selectionManager.selectedSectionIndex == index {
+            // Deselect the section if it's tapped when already selected
+            selectionManager.selectedSectionIndex = nil
+        } else {
+            // Otherwise, select the tapped section
+            selectionManager.selectedSectionIndex = index
+        }
+    }
+
+    private func isSelected(index: Int) -> Bool {
+        // If no section is selected, treat all as selected
+        guard let selectedSectionIndex = selectionManager.selectedSectionIndex else {
+            return true
+        }
+        // Otherwise, only the selected section is treated as selected
+        return index == selectedSectionIndex
+    }
 
     func interpolatedValue(for scale: CGFloat, minVal: CGFloat, maxVal: CGFloat) -> CGFloat {
         let clampedScale = gestureManager.scale
         let normalizedScale = (clampedScale - minScale) / (maxScale - minScale)
-        let invertedScale = 1 - normalizedScale
         return minVal + normalizedScale * (maxVal - minVal)
     }
 

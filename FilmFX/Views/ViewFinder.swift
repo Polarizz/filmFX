@@ -39,7 +39,7 @@ struct ViewFinder: View {
         ZoomAndPanView(totalFrames: CGFloat(totalFrames), frameSpacing: frameSpacing, gestureManager: gestureManager, pageModel: pageModel, dragState: dragState) {
             LazyHStack(alignment: .top, spacing: frameSpacing) {
                 ForEach(0..<totalFrames, id: \.self) { index in
-                    FrameRectangle(gestureManager: gestureManager, number: index + 1, frameWidth: frameWidth, isSelected: selectedFrames.contains(index)) {
+                    FrameRectangle(gestureManager: gestureManager, number: index + 1, frameWidth: frameWidth, isSelected: selectedFrames.contains(index), editStrength: $editStrength) {
                         handleTap(for: index)
                     }
                 }
@@ -50,9 +50,8 @@ struct ViewFinder: View {
         .overlay(
             Group {
                 if !hideTimeline {
-                    Timeline(pageModel: pageModel, gestureManager: gestureManager, dragState: dragState, selectionManager: selectionManager, frameSpacing: frameSpacing, selectedFrames: $selectedFrames)
+                    Timeline(pageModel: pageModel, gestureManager: gestureManager, dragState: dragState, selectionManager: selectionManager, frameSpacing: frameSpacing, selectedFrames: $selectedFrames, editStrength: $editStrength)
                         .offset(y: currentOffset)
-                        .transition(.move(edge: .bottom))
                 }
             }
             .opacity(hideTimeline ? 0 : 1)
@@ -100,35 +99,37 @@ struct ViewFinder: View {
                 Group {
                     if selectedFrames.count == 0 && selectionManager.selectedSectionIndex == nil {
                         playbackControls
+                            .transition(.move(edge: .top))
                     }
                 }
-                .offset(y: selectedFrames.count == 0 && selectionManager.selectedSectionIndex == nil ? 0 : -40)
-                .blur(radius: selectedFrames.count == 0 && selectionManager.selectedSectionIndex == nil ? 0 : 10)
+                .opacity(selectedFrames.count == 0 && selectionManager.selectedSectionIndex == nil ? 1 : 0)
+                .blur(radius: selectedFrames.count == 0 && selectionManager.selectedSectionIndex == nil ? 0 : 20)
 
                 Group {
                     if selectedFrames.count != 0 {
                         newEffectControl
+                            .transition(.move(edge: .bottom))
                     }
                 }
-                .offset(y: selectedFrames.count != 0 ? 0 : 40)
-                .blur(radius: selectedFrames.count != 0 ? 0 : 10)
+                .opacity(selectedFrames.count != 0 ? 1 : 0)
+                .blur(radius: selectedFrames.count != 0 ? 0 : 20)
 
                 Group {
                     if selectionManager.selectedSectionIndex != nil && !editStrength {
                         effectControls
                     }
                 }
-                .offset(y: selectionManager.selectedSectionIndex != nil ? 0 : 40)
+                .offset(y: selectionManager.selectedSectionIndex != nil ? 0 : 20)
                 .blur(radius: selectionManager.selectedSectionIndex != nil && !editStrength ? 0 : 10)
-                .offset(y: editStrength ? -40 : 0)
+                .offset(y: editStrength ? -20 : 0)
 
                 Group {
-                    if editStrength {
+                    if editStrength && selectedFrames.count == 0 {
                         strengthControl
                     }
                 }
-                .offset(y: editStrength ? 0 : 40)
-                .blur(radius: editStrength ? 0 : 10)
+                .offset(y: editStrength && selectedFrames.count == 0 ? 0 : 40)
+                .blur(radius: editStrength && selectedFrames.count == 0 ? 0 : 10)
             }
             .padding(.bottom, 70)
             .animation(.smooth(duration: 0.3), value: selectionManager.selectedSectionIndex)

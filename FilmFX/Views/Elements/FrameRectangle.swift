@@ -19,6 +19,7 @@ struct FrameRectangle: View {
     var number: Int
     var frameWidth: CGFloat
     var isSelected: Bool
+    @Binding var editStrength: Bool
     var onTap: () -> Void
 
     var body: some View {
@@ -38,7 +39,10 @@ struct FrameRectangle: View {
             .animation(.smooth(duration: 0.3), value: gestureManager.scale)
             .onTapGesture {
                 Haptics.shared.play(.light)
-                withAnimation(.smooth(duration: 0.3)) { onTap() }
+                withAnimation(.smooth(duration: 0.3)) {
+                    onTap()
+                    editStrength = false
+                }
             }
             .wiggling(isSelected, amplitude: wiggleAmplitude)
     }
