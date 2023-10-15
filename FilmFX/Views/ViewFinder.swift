@@ -12,7 +12,9 @@ struct ViewFinder: View {
     @Environment(\.safeAreaInsets) var safeAreaInsets
 
     @GestureState var gestureOffsetY: CGFloat = 0.0
+    @State var fakeOffsetY: CGFloat = 0.0
 
+    
     @State var gestureManager = GestureManager()
     @State var pageModel = PageModel()
     @State var dragState = DragState()
@@ -31,6 +33,7 @@ struct ViewFinder: View {
     @State var gestureOffsetX: CGFloat = 0.0
     @State var lastGestureOffsetX: CGFloat = 0.0
     @State var editStrength = false
+    @State var hideTimeline = false
 
     var body: some View {
         ZoomAndPanView(totalFrames: CGFloat(totalFrames), frameSpacing: frameSpacing, gestureManager: gestureManager, pageModel: pageModel, dragState: dragState) {
@@ -42,11 +45,19 @@ struct ViewFinder: View {
                 }
             }
         }
-        .offset(y: -60)
+        .offset(y: hideTimeline ? -30 : -60)
         .background(.black)
         .overlay(
-            Timeline(pageModel: pageModel, gestureManager: gestureManager, dragState: dragState, selectionManager: selectionManager, frameSpacing: frameSpacing, selectedFrames: $selectedFrames)
-                .offset(y: currentOffset)
+            Group {
+                if !hideTimeline {
+                    Timeline(pageModel: pageModel, gestureManager: gestureManager, dragState: dragState, selectionManager: selectionManager, frameSpacing: frameSpacing, selectedFrames: $selectedFrames)
+                        .offset(y: currentOffset)
+                        .transition(.move(edge: .bottom))
+                }
+            }
+            .opacity(hideTimeline ? 0 : 1)
+            .blur(radius: hideTimeline ? 30 : 0)
+            .animation(.smooth(duration: 0.39), value: hideTimeline)
             , alignment: .topLeading
         )
         .offset(y: gestureOffsetY)
@@ -55,13 +66,33 @@ struct ViewFinder: View {
                 .updating($gestureOffsetY) { value, state, _ in
                     state = (value.translation.height > 0 ? sqrt(value.translation.height) : -sqrt(-value.translation.height)) * 11
                 }
+                .onChanged { value in
+                    fakeOffsetY = (value.translation.height > 0 ? sqrt(value.translation.height) : -sqrt(-value.translation.height)) * 11
+                    if fakeOffsetY > 120  {
+                        hideTimeline = true
+                        selectedFrames.removeAll()
+                        editStrength = false
+                        selectionManager.selectedSectionIndex = nil
+                    }
+
+                    if fakeOffsetY < -120 {
+                        hideTimeline = false
+                    }
+                }
         )
+        .onChange(of: hideTimeline) {
+            Haptics.shared.play(.light)
+        }
         .animation(.smooth(duration: 0.39), value: gestureOffsetY != 0)
         .animation(.smooth(duration: 0.2), value: gestureOffsetY)
 
         .overlay(
-            SafeAreaBlockBottom()
-                .ignoresSafeArea(.container)
+            VStack {
+                SafeAreaBlockTop()
+                Spacer()
+                SafeAreaBlockBottom()
+            }
+            .ignoresSafeArea(.container)
             , alignment: .bottom
         )
         .overlay(
@@ -381,6 +412,7 @@ struct ViewFinder: View {
         selectionManager.selectedSectionIndex = nil
 
         withAnimation(.smooth(duration: 0.3)) { pageModel.showTip = false }
+        hideTimeline = false
     }
 
     func timeString(from offsetX: CGFloat) -> String {
