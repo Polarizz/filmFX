@@ -11,6 +11,8 @@ struct ViewFinder: View {
 
     @Environment(\.safeAreaInsets) var safeAreaInsets
 
+    @GestureState var gestureOffsetY: CGFloat = 0.0
+
     @State var gestureManager = GestureManager()
     @State var pageModel = PageModel()
     @State var dragState = DragState()
@@ -40,199 +42,62 @@ struct ViewFinder: View {
                 }
             }
         }
-        .offset(y: -50)
-        .ignoresSafeArea(.container)
+        .offset(y: -60)
         .background(.black)
         .overlay(
             Timeline(pageModel: pageModel, gestureManager: gestureManager, dragState: dragState, selectionManager: selectionManager, frameSpacing: frameSpacing, selectedFrames: $selectedFrames)
                 .offset(y: currentOffset)
             , alignment: .topLeading
         )
+        .offset(y: gestureOffsetY)
+        .simultaneousGesture(
+            DragGesture(minimumDistance: 10, coordinateSpace: .global)
+                .updating($gestureOffsetY) { value, state, _ in
+                    state = (value.translation.height > 0 ? sqrt(value.translation.height) : -sqrt(-value.translation.height)) * 11
+                }
+        )
+        .animation(.smooth(duration: 0.39), value: gestureOffsetY != 0)
+        .animation(.smooth(duration: 0.2), value: gestureOffsetY)
+
         .overlay(
-            Group {
-                if selectionManager.selectedSectionIndex != nil {
-                    if !editStrength {
-                        HStack(alignment: .top) {
-                            Spacer()
-                            Button(action: { withAnimation(.smooth(duration: 0.3)) { editStrength = true } }) {
-                                VStack(spacing: 2) {
-                                    Text("Strength".uppercased())
-                                        .font(.custom("SFCamera", size: UIConstants.subheadline))
-
-                                    Text("9")
-                                        .font(.custom("SFCamera", size: UIConstants.subheadline))
-                                        .padding(.bottom, 3)
-
-                                    HStack(alignment: .bottom, spacing: 7) {
-                                        ForEach(0..<7, id: \.self) { index in
-                                            Capsule()
-                                                .fill(.gray.opacity(0.65))
-                                                .frame(width: 1, height: (index % 3 == 0) ? 9 : 6)
-                                        }
-                                    }
-                                }
-                                .contentShape(Rectangle())
-                            }
-                            .buttonStyle(DefaultButtonStyle())
-                            Spacer()
-                            VStack(spacing: 9) {
-                                Text("Edit".uppercased())
-                                    .font(.custom("SFCamera", size: UIConstants.subheadline))
-
-                                Image(systemName: "character.cursor.ibeam")
-                                    .font(.system(size: UIConstants.footnote))
-                                    .frame(height: 14)
-                            }
-                            Spacer()
-                            VStack(spacing: 9) {
-                                Text("Duplicate".uppercased())
-                                    .font(.custom("SFCamera", size: UIConstants.subheadline))
-
-                                Image(systemName: "doc.on.doc")
-                                    .font(.system(size: UIConstants.footnote))
-                                    .frame(height: 14)
-                            }
-                            Spacer()
-                            VStack(spacing: 9) {
-                                Text("Delete".uppercased())
-                                    .font(.custom("SFCamera", size: UIConstants.subheadline))
-
-                                Image(systemName: "delete.backward")
-                                    .font(.system(size: UIConstants.footnote))
-                                    .frame(height: 14)
-                            }
-                            .foregroundColor(.red)
-                            Spacer()
-                        }
-                        .foregroundColor(.white)
-                    } else {
-                        ZStack(alignment: .bottom) {
-                            VStack(spacing: 7) {
-                                Text(String(min(50, max(-50, scrollManager.positionID))))
-                                    .font(.custom("SFCamera", size: UIConstants.callout))
-                                    .tracking(1)
-                                    .foregroundColor(scrollManager.positionID == 0 ? .white : .yellow)
-
-                                Capsule()
-                                    .fill(scrollManager.positionID == 0 ? .white : .yellow)
-                                    .frame(width: 1, height: 25)
-                            }
-                            .offset(y: -30)
-
-                            ScrollViewWrapper(scrollManager: scrollManager) {
-                                HStack(spacing: 9) {
-                                    ForEach(0..<4, id: \.self) { _ in
-                                        Capsule()
-                                            .fill(Color.white)
-                                            .frame(width: 1, height: 11)
-                                        ForEach(0..<9, id: \.self) { _ in
-                                            Capsule()
-                                                .fill(Color.gray.opacity(0.5))
-                                                .frame(width: 1, height: 10)
-                                        }
-                                    }
-                                    Capsule()
-                                        .fill(Color.white)
-                                        .frame(width: 1, height: 11)
-                                }
-                                .overlay(
-                                    Circle()
-                                        .fill(.white)
-                                        .frame(width: 5, height: 5)
-                                        .offset(y: 15)
-                                    , alignment: .bottom
-                                )
-                            }
-                            .frame(height: 72)
-                            .contentShape(Rectangle())
-                            .mask(LinearGradient(gradient: Gradient(stops: [
-                                .init(color: .clear, location: 0),
-                                .init(color: .black, location: 0.15),
-                                .init(color: .black, location: 0.85),
-                                .init(color: .clear, location: 1)
-                            ]), startPoint: .leading, endPoint: .trailing))
-                        }
-                        .overlay(
-                            Button(action: { withAnimation(.smooth(duration: 0.3)) { editStrength = false } }) {
-                                Text("Strength".uppercased())
-                                    .font(.custom("SFCamera", size: UIConstants.subheadline))
-                                    .foregroundColor(scrollManager.positionID == 0 ? .white : .yellow)
-                                    .offset(y: -8)
-                                    .padding(.trailing, 16)
-                                    .padding(20)
-                                    .contentShape(Rectangle())
-                            }
-                                .padding(-20)
-                                .buttonStyle(DefaultButtonStyle())
-                            , alignment: .topTrailing
-                        )
-                    }
-                } else {
-                    if selectedFrames.count == 0 {
-                        HStack(spacing: 60) {
-                            Button(action: { }) {
-                                Image(systemName: "backward.frame.fill")
-                                    .font(.system(size: UIConstants.title))
-                                    .contentShape(Rectangle())
-                            }
-                            .buttonStyle(PlayButtonStyle())
-
-                            Button(action: { }) {
-                                Image(systemName: "play.fill")
-                                    .font(.system(size: UIConstants.largeTitle))
-                                    .contentShape(Rectangle())
-                            }
-                            .buttonStyle(PlayButtonStyle())
-
-                            Button(action: { }) {
-                                Image(systemName: "forward.frame.fill")
-                                    .font(.system(size: UIConstants.title))
-                                    .contentShape(Rectangle())
-                            }
-                            .buttonStyle(PlayButtonStyle())
-                        }
-                        .foregroundColor(.white.opacity(0.9))
-                    } else {
-                        RoundedRectangle(cornerRadius: 7)
-                            .fill(.gray.opacity(0.39))
-                            .frame(height: 43)
-                            .overlay(
-                                HStack(spacing: 0) {
-                                    HStack(spacing: 7) {
-                                        Image(systemName: "character.cursor.ibeam")
-                                            .font(.system(size: UIConstants.callout).weight(.medium))
-                                            .symbolRenderingMode(.hierarchical)
-                                            .frame(height: 17)
-
-                                        Group {
-                                            Text("Effect")
-                                                .foregroundColor(.white)
-                                        }
-                                        .font(.custom("SFCamera", size: UIConstants.callout))
-                                        .tracking(0.3)
-                                        .lineLimit(1)
-                                        .fixedSize(horizontal: false, vertical: true)
-
-                                        Spacer()
-                                    }
-                                    .padding(.horizontal, 10)
-                                    .padding(.vertical, 10)
-                                    .background(Color(.tertiarySystemFill))
-                                    .clipShape(
-                                        RoundedRectangle(cornerRadius: 4)
-                                    )
-                                    .padding(.trailing, 7)
-
-                                    Image(systemName: "plus.circle.fill")
-                                }
-                                    .foregroundColor(.white)
-                                    .font(.title3.weight(.semibold))
-                                    .padding(.leading, 2)
-                                    .padding(.trailing, 7)
-                            )
-                            .padding(.horizontal, 16)
+            SafeAreaBlockBottom()
+                .ignoresSafeArea(.container)
+            , alignment: .bottom
+        )
+        .overlay(
+            ZStack(alignment: .center) {
+                Group {
+                    if selectedFrames.count == 0 && selectionManager.selectedSectionIndex == nil {
+                        playbackControls
                     }
                 }
+                .offset(y: selectedFrames.count == 0 && selectionManager.selectedSectionIndex == nil ? 0 : -40)
+                .blur(radius: selectedFrames.count == 0 && selectionManager.selectedSectionIndex == nil ? 0 : 10)
+
+                Group {
+                    if selectedFrames.count != 0 {
+                        newEffectControl
+                    }
+                }
+                .offset(y: selectedFrames.count != 0 ? 0 : 40)
+                .blur(radius: selectedFrames.count != 0 ? 0 : 10)
+
+                Group {
+                    if selectionManager.selectedSectionIndex != nil && !editStrength {
+                        effectControls
+                    }
+                }
+                .offset(y: selectionManager.selectedSectionIndex != nil ? 0 : 40)
+                .blur(radius: selectionManager.selectedSectionIndex != nil && !editStrength ? 0 : 10)
+                .offset(y: editStrength ? -40 : 0)
+
+                Group {
+                    if editStrength {
+                        strengthControl
+                    }
+                }
+                .offset(y: editStrength ? 0 : 40)
+                .blur(radius: editStrength ? 0 : 10)
             }
             .padding(.bottom, 70)
             .animation(.smooth(duration: 0.3), value: selectionManager.selectedSectionIndex)
@@ -248,6 +113,10 @@ struct ViewFinder: View {
                 Image(systemName: "chevron.up")
                     .font(.system(size: UIConstants.body).weight(.medium))
                     .foregroundColor(.white)
+                    .offset(y: -1)
+                    .padding(9)
+                    .background(.gray.opacity(0.3))
+                    .clipShape(Circle())
                     .opacity(!pageModel.showTip ? 1 : 0)
             }
             .padding(.bottom, 3)
@@ -312,6 +181,188 @@ struct ViewFinder: View {
             .animation(.smooth(duration: 0.3), value: dragState.isDragging)
             , alignment: .top
         )
+    }
+
+    var effectControls: some View {
+        HStack(alignment: .top) {
+            Spacer()
+            Button(action: { withAnimation(.smooth(duration: 0.3)) { editStrength = true } }) {
+                VStack(spacing: 2) {
+                    Text("Strength".uppercased())
+                        .font(.custom("SFCamera", size: UIConstants.subheadline))
+
+                    Text("9")
+                        .font(.custom("SFCamera", size: UIConstants.subheadline))
+                        .padding(.bottom, 3)
+
+                    HStack(alignment: .bottom, spacing: 7) {
+                        ForEach(0..<7, id: \.self) { index in
+                            Capsule()
+                                .fill(.gray.opacity(0.65))
+                                .frame(width: 1, height: (index % 3 == 0) ? 9 : 6)
+                        }
+                    }
+                }
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(DefaultButtonStyle())
+            Spacer()
+            VStack(spacing: 9) {
+                Text("Edit".uppercased())
+                    .font(.custom("SFCamera", size: UIConstants.subheadline))
+
+                Image(systemName: "character.cursor.ibeam")
+                    .font(.system(size: UIConstants.footnote))
+                    .frame(height: 14)
+            }
+            Spacer()
+            VStack(spacing: 9) {
+                Text("Duplicate".uppercased())
+                    .font(.custom("SFCamera", size: UIConstants.subheadline))
+
+                Image(systemName: "doc.on.doc")
+                    .font(.system(size: UIConstants.footnote))
+                    .frame(height: 14)
+            }
+            Spacer()
+            VStack(spacing: 9) {
+                Text("Delete".uppercased())
+                    .font(.custom("SFCamera", size: UIConstants.subheadline))
+
+                Image(systemName: "delete.backward")
+                    .font(.system(size: UIConstants.footnote))
+                    .frame(height: 14)
+            }
+            .foregroundColor(.red)
+            Spacer()
+        }
+        .foregroundColor(.white)
+        .offset(y: 7)
+    }
+
+    var strengthControl: some View {
+        ZStack(alignment: .bottom) {
+            VStack(spacing: 7) {
+                Text(String(min(50, max(-50, scrollManager.positionID))))
+                    .font(.custom("SFCamera", size: UIConstants.callout))
+                    .tracking(1)
+                    .foregroundColor(scrollManager.positionID == 0 ? .white : .yellow)
+
+                Capsule()
+                    .fill(scrollManager.positionID == 0 ? .white : .yellow)
+                    .frame(width: 1, height: 25)
+            }
+            .offset(y: -30)
+
+            ScrollViewWrapper(scrollManager: scrollManager) {
+                HStack(spacing: 9) {
+                    ForEach(0..<4, id: \.self) { _ in
+                        Capsule()
+                            .fill(Color.white)
+                            .frame(width: 1, height: 11)
+                        ForEach(0..<9, id: \.self) { _ in
+                            Capsule()
+                                .fill(Color.gray.opacity(0.5))
+                                .frame(width: 1, height: 10)
+                        }
+                    }
+                    Capsule()
+                        .fill(Color.white)
+                        .frame(width: 1, height: 11)
+                }
+                .overlay(
+                    Circle()
+                        .fill(.white)
+                        .frame(width: 5, height: 5)
+                        .offset(y: 15)
+                    , alignment: .bottom
+                )
+            }
+            .frame(height: 72)
+            .contentShape(Rectangle())
+            .mask(LinearGradient(gradient: Gradient(stops: [
+                .init(color: .clear, location: 0),
+                .init(color: .black, location: 0.15),
+                .init(color: .black, location: 0.85),
+                .init(color: .clear, location: 1)
+            ]), startPoint: .leading, endPoint: .trailing))
+        }
+        .overlay(
+            Button(action: { withAnimation(.smooth(duration: 0.3)) { editStrength = false } }) {
+                Text("Strength".uppercased())
+                    .font(.custom("SFCamera", size: UIConstants.subheadline))
+                    .foregroundColor(scrollManager.positionID == 0 ? .white : .yellow)
+                    .offset(y: -8)
+                    .padding(.trailing, 16)
+                    .padding(20)
+                    .contentShape(Rectangle())
+            }
+            .padding(-20)
+            .buttonStyle(DefaultButtonStyle())
+            , alignment: .topTrailing
+        )
+        .offset(y: 35)
+    }
+
+    var playbackControls: some View {
+        HStack(spacing: 60) {
+            Button(action: { }) {
+                Image(systemName: "backward.frame.fill")
+                    .font(.system(size: UIConstants.title))
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(PlayButtonStyle())
+
+            Button(action: { }) {
+                Image(systemName: "play.fill")
+                    .font(.system(size: UIConstants.largeTitle))
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(PlayButtonStyle())
+
+            Button(action: { }) {
+                Image(systemName: "forward.frame.fill")
+                    .font(.system(size: UIConstants.title))
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(PlayButtonStyle())
+        }
+        .foregroundColor(.white.opacity(0.9))
+    }
+
+    var newEffectControl: some View {
+        HStack(spacing: 0) {
+            HStack(spacing: 7) {
+                Image(systemName: "character.cursor.ibeam")
+                    .font(.system(size: UIConstants.callout).weight(.medium))
+                    .symbolRenderingMode(.hierarchical)
+                    .frame(height: 17)
+
+                Group {
+                    Text("Effect")
+                }
+                .font(.custom("SFCamera", size: UIConstants.callout))
+                .tracking(0.3)
+                .lineLimit(1)
+                .fixedSize(horizontal: false, vertical: true)
+
+                Spacer()
+            }
+            .padding(10)
+            .background(.black.opacity(0.3))
+            .clipShape(RoundedRectangle(cornerRadius: 6))
+            .padding(.trailing, 10)
+
+            Image(systemName: "plus.circle.fill")
+        }
+        .foregroundColor(.white)
+        .font(.title3.weight(.semibold))
+        .padding(.trailing, 10)
+        .padding([.vertical, .leading], 3)
+        .background(.gray.opacity(0.39))
+        .clipShape(RoundedRectangle(cornerRadius: 9))
+        .padding(.horizontal, 16)
+        .offset(y: 5)
     }
 
     func handleTap(for index: Int) {

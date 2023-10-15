@@ -155,7 +155,7 @@ struct ZoomAndPanView<Content: View>: UIViewRepresentable {
         let containerView = UIView()
         containerView.frame = CGRect(
             x: 0,
-            y: UIScreen.main.bounds.midY - 110,
+            y: UIScreen.main.bounds.midY - 157,
             width: (frameWidth + frameSpacing) * totalFrames - frameSpacing,
             height: frameWidth * (9/16)
         )

@@ -49,7 +49,6 @@ struct FrameRectangle: View {
             .resizable()
             .aspectRatio(contentMode: .fill)
             .frame(width: frameWidth, height: frameWidth * (9/16))
-            .brightness(isSelected ? -0.1 : 0)
             .clipShape(RoundedRectangle(cornerRadius: currentCornerRadius))
             .overlay(
                 RoundedRectangle(cornerRadius: currentCornerRadius)
@@ -93,6 +92,6 @@ struct FrameRectangle: View {
     }
 
     var wiggleAmplitude: CGFloat {
-        interpolatedValue(for: gestureManager.scale, minVal: 1, maxVal: 2)
+        interpolatedValue(for: gestureManager.scale, minVal: 0.9, maxVal: 1.7)
     }
 }

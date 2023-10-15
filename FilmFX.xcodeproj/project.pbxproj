@@ -19,6 +19,7 @@
 		D44BB35F2AD737080009AC4F /* ViewFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = D44BB35E2AD737080009AC4F /* ViewFinder.swift */; };
 		D455DDFF2AD74BC6003C5EFE /* SafeArea.swift in Sources */ = {isa = PBXBuildFile; fileRef = D455DDFE2AD74BC6003C5EFE /* SafeArea.swift */; };
 		D4A16F242ADB424000D4E280 /* Wiggle.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4A16F232ADB424000D4E280 /* Wiggle.swift */; };
+		D4A16F262ADB9C8F00D4E280 /* SafeAreaBlock.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4A16F252ADB9C8F00D4E280 /* SafeAreaBlock.swift */; };
 		D4A798E42AD88EF4009E6733 /* ZoomAndPanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4A798E32AD88EF4009E6733 /* ZoomAndPanView.swift */; };
 		D4A798E72AD88F0F009E6733 /* FrameRectangle.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4A798E62AD88F0F009E6733 /* FrameRectangle.swift */; };
 		D4A798EB2AD89793009E6733 /* ButtonStyles.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4A798EA2AD89793009E6733 /* ButtonStyles.swift */; };
@@ -42,6 +43,7 @@
 		D44BB35E2AD737080009AC4F /* ViewFinder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewFinder.swift; sourceTree = "<group>"; };
 		D455DDFE2AD74BC6003C5EFE /* SafeArea.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafeArea.swift; sourceTree = "<group>"; };
 		D4A16F232ADB424000D4E280 /* Wiggle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Wiggle.swift; sourceTree = "<group>"; };
+		D4A16F252ADB9C8F00D4E280 /* SafeAreaBlock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafeAreaBlock.swift; sourceTree = "<group>"; };
 		D4A798E32AD88EF4009E6733 /* ZoomAndPanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomAndPanView.swift; sourceTree = "<group>"; };
 		D4A798E62AD88F0F009E6733 /* FrameRectangle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrameRectangle.swift; sourceTree = "<group>"; };
 		D4A798EA2AD89793009E6733 /* ButtonStyles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonStyles.swift; sourceTree = "<group>"; };
@@ -100,6 +102,7 @@
 				D4E4E0662ADA428400ACB597 /* Blur.swift */,
 				D4A16F232ADB424000D4E280 /* Wiggle.swift */,
 				D4E4E0682ADA435800ACB597 /* Bar.swift */,
+				D4A16F252ADB9C8F00D4E280 /* SafeAreaBlock.swift */,
 				D42A88142AD95580009A80C9 /* UIConstants.swift */,
 				D427459A2AD8B984005AEA7E /* Haptics.swift */,
 				D4A798EA2AD89793009E6733 /* ButtonStyles.swift */,
@@ -207,6 +210,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D4A16F242ADB424000D4E280 /* Wiggle.swift in Sources */,
+				D4A16F262ADB9C8F00D4E280 /* SafeAreaBlock.swift in Sources */,
 				D427459B2AD8B984005AEA7E /* Haptics.swift in Sources */,
 				D4E4E0692ADA435800ACB597 /* Bar.swift in Sources */,
 				D42745992AD8B7F7005AEA7E /* Timeline.swift in Sources */,

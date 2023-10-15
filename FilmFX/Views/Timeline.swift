@@ -47,47 +47,46 @@ struct Timeline: View {
                     selectedFrames.removeAll()
                     withAnimation(.smooth(duration: 0.3)) { pageModel.showTip = false }
                 }) {
-                    RoundedRectangle(cornerRadius: 7)
-                        .fill(.yellow)
-                        .frame(width: (currentWidth * sections[index].length) + (frameSpacing * (sections[index].length - 1)) - frameSpacing/2, height: 43)
-                        .overlay(
-                            HStack(spacing: 0) {
-                                Image(systemName: "chevron.compact.left")
+                    HStack(spacing: 0) {
+                        Image(systemName: "chevron.compact.left")
 
-                                HStack(spacing: 7) {
-                                    Image(systemName: sections[index].icon)
-                                        .font(.system(size: UIConstants.callout).weight(.medium))
-                                        .symbolRenderingMode(.hierarchical)
-                                        .frame(height: 17)
+                        HStack(spacing: 7) {
+                            Image(systemName: sections[index].icon)
+                                .font(.system(size: UIConstants.callout).weight(.medium))
+                                .symbolRenderingMode(.hierarchical)
+                                .frame(height: 17)
 
-                                    Group {
-                                        Text(sections[index].text + " • ")
-                                            .foregroundColor(.black)
-                                        + Text("9")
-                                            .foregroundColor(.black.opacity(0.5))
-                                    }
-                                    .font(.custom("SFCamera", size: UIConstants.callout))
-                                    .tracking(0.3)
-                                    .lineLimit(1)
-                                    .fixedSize(horizontal: false, vertical: true)
-
-                                    Spacer()
-                                }
-                                .padding(.horizontal, 10)
-                                .padding(.vertical, 10)
-                                .offset(x: gestureManager.offsetX > 26 + ((frameSpacing + currentWidth) * sections[index].frameOffset) ? gestureManager.offsetX - 26 - ((frameSpacing + currentWidth) * sections[index].frameOffset) : 0)
-                                .background(.black.opacity(0.39))
-                                .clipShape(
-                                    RoundedRectangle(cornerRadius: 4)
-                                )
-                                .padding(.horizontal, 7)
-
-                                Image(systemName: "chevron.compact.right")
+                            Group {
+                                Text(sections[index].text + " • ")
+                                    .foregroundColor(.black)
+                                + Text("9")
+                                    .foregroundColor(.black.opacity(0.5))
                             }
-                            .foregroundColor(.black)
-                            .font(.title3.weight(.semibold))
-                            .padding(.horizontal, 7)
+                            .font(.custom("SFCamera", size: UIConstants.callout))
+                            .tracking(0.3)
+                            .lineLimit(1)
+                            .fixedSize(horizontal: false, vertical: true)
+
+                            Spacer()
+                        }
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 10)
+                        .offset(x: gestureManager.offsetX > 26 + ((frameSpacing + currentWidth) * sections[index].frameOffset) ? gestureManager.offsetX - 26 - ((frameSpacing + currentWidth) * sections[index].frameOffset) : 0)
+                        .background(.black.opacity(0.3))
+                        .clipShape(
+                            RoundedRectangle(cornerRadius: 4)
                         )
+                        .padding(.horizontal, 7)
+
+                        Image(systemName: "chevron.compact.right")
+                    }
+                    .foregroundColor(.black)
+                    .font(.title3.weight(.semibold))
+                    .padding(.horizontal, 7)
+                    .padding(.vertical, 3)
+                    .background(.yellow)
+                    .clipShape(RoundedRectangle(cornerRadius: 7))
+                    .frame(width: (currentWidth * sections[index].length) + (frameSpacing * (sections[index].length - 1)) - frameSpacing/2)
                         .opacity(selectionManager.selectedSectionIndex == index ? 1.0 : 0.39)
                         .offset(x: (frameSpacing + currentWidth) * sections[index].frameOffset)
                 }
