@@ -51,7 +51,7 @@ struct SafeAreaBlockBottom: View {
 //        Color.red
             .frame(
                 width: 9999,
-                height: height*2.2
+                height: height*2.5
             )
             .padding(.horizontal, -200)
             .blur(radius: 20)

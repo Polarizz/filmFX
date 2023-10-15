@@ -93,14 +93,14 @@
 			isa = PBXGroup;
 			children = (
 				D42A88102AD95207009A80C9 /* Info.plist */,
-				D44BB34F2AD736A50009AC4F /* FilmFXApp.swift */,
 				D42A88132AD95362009A80C9 /* Fonts */,
+				D44BB34F2AD736A50009AC4F /* FilmFXApp.swift */,
 				D44BB3512AD736A50009AC4F /* ContentView.swift */,
+				D413BF2B2ADA357900B93B8A /* ViewModels.swift */,
 				D44BB35D2AD737010009AC4F /* Views */,
 				D44BB3532AD736A60009AC4F /* Assets.xcassets */,
 				D44BB3552AD736A60009AC4F /* Preview Content */,
 				D455DDFE2AD74BC6003C5EFE /* SafeArea.swift */,
-				D413BF2B2ADA357900B93B8A /* ViewModels.swift */,
 				D4E4E0662ADA428400ACB597 /* Blur.swift */,
 				D4A16F232ADB424000D4E280 /* Wiggle.swift */,
 				D4E4E0682ADA435800ACB597 /* Bar.swift */,

@@ -14,7 +14,6 @@ struct ViewFinder: View {
     @GestureState var gestureOffsetY: CGFloat = 0.0
     @State var fakeOffsetY: CGFloat = 0.0
 
-    
     @State var gestureManager = GestureManager()
     @State var pageModel = PageModel()
     @State var dragState = DragState()
@@ -34,6 +33,7 @@ struct ViewFinder: View {
     @State var lastGestureOffsetX: CGFloat = 0.0
     @State var editStrength = false
     @State var showAudio = false
+    @State var showMoreControls = false
 
     var body: some View {
         ZoomAndPanView(totalFrames: CGFloat(totalFrames), frameSpacing: frameSpacing, gestureManager: gestureManager, pageModel: pageModel, dragState: dragState) {
@@ -111,39 +111,48 @@ struct ViewFinder: View {
         .overlay(
             ZStack(alignment: .center) {
                 Group {
-                    if selectedFrames.count == 0 && selectionManager.selectedSectionIndex == nil {
+                    if selectedFrames.count == 0 && selectionManager.selectedSectionIndex == nil && !showMoreControls {
                         playbackControls
                             .transition(.move(edge: .top))
                     }
                 }
-                .opacity(selectedFrames.count == 0 && selectionManager.selectedSectionIndex == nil ? 1 : 0)
-                .blur(radius: selectedFrames.count == 0 && selectionManager.selectedSectionIndex == nil ? 0 : 20)
+                .opacity(selectedFrames.count == 0 && selectionManager.selectedSectionIndex == nil && !showMoreControls ? 1 : 0)
+                .blur(radius: selectedFrames.count == 0 && selectionManager.selectedSectionIndex == nil && !showMoreControls ? 0 : 20)
 
                 Group {
-                    if selectedFrames.count != 0 {
+                    if selectedFrames.count != 0 && !showMoreControls {
                         newEffectControl
                             .transition(.move(edge: .bottom))
                     }
                 }
-                .opacity(selectedFrames.count != 0 ? 1 : 0)
-                .blur(radius: selectedFrames.count != 0 ? 0 : 20)
+                .opacity(selectedFrames.count != 0 && !showMoreControls ? 1 : 0)
+                .blur(radius: selectedFrames.count != 0 && !showMoreControls ? 0 : 20)
 
                 Group {
-                    if selectionManager.selectedSectionIndex != nil && !editStrength {
+                    if selectionManager.selectedSectionIndex != nil && !editStrength && !showMoreControls {
                         effectControls
                     }
                 }
                 .offset(y: selectionManager.selectedSectionIndex != nil ? 0 : 20)
-                .blur(radius: selectionManager.selectedSectionIndex != nil && !editStrength ? 0 : 10)
-                .offset(y: editStrength ? -20 : 0)
+                .blur(radius: selectionManager.selectedSectionIndex != nil && !editStrength && !showMoreControls ? 0 : 10)
+                .offset(y: editStrength && !showMoreControls ? -20 : 0)
 
                 Group {
-                    if editStrength && selectedFrames.count == 0 {
+                    if editStrength && selectedFrames.count == 0 && !showMoreControls {
                         strengthControl
                     }
                 }
-                .offset(y: editStrength && selectedFrames.count == 0 ? 0 : 40)
-                .blur(radius: editStrength && selectedFrames.count == 0 ? 0 : 10)
+                .offset(y: editStrength && selectedFrames.count == 0 && !showMoreControls ? 0 : 40)
+                .blur(radius: editStrength && selectedFrames.count == 0 && !showMoreControls ? 0 : 10)
+
+                Group {
+                    if showMoreControls {
+                        moreControls
+                            .transition(.move(edge: .bottom))
+                    }
+                }
+                .opacity(showMoreControls ? 1 : 0)
+                .blur(radius: showMoreControls ? 0 : 10)
             }
             .padding(.bottom, 70)
             .animation(.smooth(duration: 0.3), value: selectionManager.selectedSectionIndex)
@@ -156,14 +165,22 @@ struct ViewFinder: View {
                     .foregroundColor(.white)
                     .opacity(pageModel.showTip ? 1 : 0)
 
-                Image(systemName: "chevron.up")
-                    .font(.system(size: UIConstants.body).weight(.medium))
-                    .foregroundColor(.white)
-                    .offset(y: -1)
-                    .padding(9)
-                    .background(.gray.opacity(0.3))
-                    .clipShape(Circle())
-                    .opacity(!pageModel.showTip ? 1 : 0)
+                Button(action: {
+                    withAnimation(.smooth(duration: 0.3)) {
+                        showMoreControls.toggle()
+                    }
+                }) {
+                    Image(systemName: showMoreControls ? "chevron.down" : "chevron.up")
+                        .font(.system(size: UIConstants.body).weight(.medium))
+                        .foregroundColor(.white)
+                        .offset(y: showMoreControls ? 1 : -1)
+                        .padding(11)
+                        .background(.gray.opacity(0.2))
+                        .clipShape(Circle())
+                        .opacity(!pageModel.showTip ? 1 : 0)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(DefaultButtonStyle())
             }
             .padding(.bottom, 3)
             , alignment: .bottom
@@ -284,6 +301,32 @@ struct ViewFinder: View {
         }
         .foregroundColor(.white)
         .offset(y: 7)
+    }
+
+    var moreControls: some View {
+        HStack(alignment: .top) {
+            Spacer()
+            VStack(spacing: 9) {
+                Text("Visibility".uppercased())
+                    .font(.custom("SFCamera", size: UIConstants.subheadline))
+
+                Image(systemName: "eye")
+                    .font(.system(size: UIConstants.footnote))
+                    .frame(height: 14)
+            }
+            Spacer()
+            VStack(spacing: 9) {
+                Text("Grid".uppercased())
+                    .font(.custom("SFCamera", size: UIConstants.subheadline))
+
+                Image(systemName: "squareshape.split.3x3")
+                    .font(.system(size: UIConstants.subheadline))
+                    .frame(height: 15)
+            }
+            Spacer()
+        }
+        .foregroundColor(.white)
+        .offset(y: -3)
     }
 
     var strengthControl: some View {

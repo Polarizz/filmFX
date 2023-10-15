@@ -8,12 +8,9 @@
 import SwiftUI
 
 struct ContentView: View {
+
     var body: some View {
         ViewFinder()
             .background(.black)
     }
-}
-
-#Preview {
-    ContentView()
 }
