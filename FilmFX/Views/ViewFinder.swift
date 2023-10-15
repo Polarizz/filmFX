@@ -33,7 +33,7 @@ struct ViewFinder: View {
     @State var gestureOffsetX: CGFloat = 0.0
     @State var lastGestureOffsetX: CGFloat = 0.0
     @State var editStrength = false
-    @State var hideTimeline = false
+    @State var showAudio = false
 
     var body: some View {
         ZoomAndPanView(totalFrames: CGFloat(totalFrames), frameSpacing: frameSpacing, gestureManager: gestureManager, pageModel: pageModel, dragState: dragState) {
@@ -45,18 +45,32 @@ struct ViewFinder: View {
                 }
             }
         }
-        .offset(y: hideTimeline ? -30 : -60)
+        .offset(y: -60)
         .background(.black)
         .overlay(
             Group {
-                if !hideTimeline {
+                if !showAudio {
                     Timeline(pageModel: pageModel, gestureManager: gestureManager, dragState: dragState, selectionManager: selectionManager, frameSpacing: frameSpacing, selectedFrames: $selectedFrames, editStrength: $editStrength)
                         .offset(y: currentOffset)
+                        .transition(.move(edge: .top))
                 }
             }
-            .opacity(hideTimeline ? 0 : 1)
-            .blur(radius: hideTimeline ? 30 : 0)
-            .animation(.smooth(duration: 0.39), value: hideTimeline)
+            .opacity(showAudio ? 0 : 1)
+            .blur(radius: showAudio ? 30 : 0)
+            .animation(.smooth(duration: 0.39), value: showAudio)
+            , alignment: .topLeading
+        )
+        .overlay(
+            Group {
+                if showAudio {
+                    AudioTimeline(pageModel: pageModel, gestureManager: gestureManager, dragState: dragState, selectionManager: selectionManager, frameSpacing: frameSpacing, selectedFrames: $selectedFrames, editStrength: $editStrength)
+                        .offset(y: currentOffset)
+                        .transition(.move(edge: .bottom))
+                }
+            }
+            .opacity(!showAudio ? 0 : 1)
+            .blur(radius: !showAudio ? 30 : 0)
+            .animation(.smooth(duration: 0.39), value: showAudio)
             , alignment: .topLeading
         )
         .offset(y: gestureOffsetY)
@@ -67,19 +81,19 @@ struct ViewFinder: View {
                 }
                 .onChanged { value in
                     fakeOffsetY = (value.translation.height > 0 ? sqrt(value.translation.height) : -sqrt(-value.translation.height)) * 11
-                    if fakeOffsetY > 120  {
-                        hideTimeline = true
+                    if fakeOffsetY < -120  {
+                        showAudio = true
                         selectedFrames.removeAll()
                         editStrength = false
                         selectionManager.selectedSectionIndex = nil
                     }
 
-                    if fakeOffsetY < -120 {
-                        hideTimeline = false
+                    if fakeOffsetY > 120 {
+                        showAudio = false
                     }
                 }
         )
-        .onChange(of: hideTimeline) {
+        .onChange(of: showAudio) {
             Haptics.shared.play(.light)
         }
         .animation(.smooth(duration: 0.39), value: gestureOffsetY != 0)
@@ -220,7 +234,7 @@ struct ViewFinder: View {
             Spacer()
             Button(action: { withAnimation(.smooth(duration: 0.3)) { editStrength = true } }) {
                 VStack(spacing: 2) {
-                    Text("Strength".uppercased())
+                    Text((showAudio ? "Volume" : "Strength").uppercased())
                         .font(.custom("SFCamera", size: UIConstants.subheadline))
 
                     Text("9")
@@ -321,7 +335,7 @@ struct ViewFinder: View {
         }
         .overlay(
             Button(action: { withAnimation(.smooth(duration: 0.3)) { editStrength = false } }) {
-                Text("Strength".uppercased())
+                Text((showAudio ? "Volume" : "Strength").uppercased())
                     .font(.custom("SFCamera", size: UIConstants.subheadline))
                     .foregroundColor(scrollManager.positionID == 0 ? .white : .yellow)
                     .offset(y: -8)
@@ -413,7 +427,7 @@ struct ViewFinder: View {
         selectionManager.selectedSectionIndex = nil
 
         withAnimation(.smooth(duration: 0.3)) { pageModel.showTip = false }
-        hideTimeline = false
+        showAudio = false
     }
 
     func timeString(from offsetX: CGFloat) -> String {
