@@ -19,6 +19,7 @@ struct ViewFinder: View {
     @State var dragState = DragState()
     @State var selectionManager = TimelineSelectionManager()
     @State var scrollManager = ScrollManager()
+    @State var cm = ControlsManager()
 
     let frameWidth: CGFloat = UIScreen.main.bounds.maxX
     let totalFrames: Int = 20
@@ -32,7 +33,6 @@ struct ViewFinder: View {
     @State var gestureOffsetX: CGFloat = 0.0
     @State var lastGestureOffsetX: CGFloat = 0.0
     @State var editStrength = false
-    @State var showAudio = false
     @State var showMoreControls = false
 
     var body: some View {
@@ -49,28 +49,28 @@ struct ViewFinder: View {
         .background(.black)
         .overlay(
             Group {
-                if !showAudio {
+                if !cm.showAudio {
                     Timeline(pageModel: pageModel, gestureManager: gestureManager, dragState: dragState, selectionManager: selectionManager, frameSpacing: frameSpacing, selectedFrames: $selectedFrames, editStrength: $editStrength)
                         .offset(y: currentOffset)
                         .transition(.move(edge: .top))
                 }
             }
-            .opacity(showAudio ? 0 : 1)
-            .blur(radius: showAudio ? 30 : 0)
-            .animation(.smooth(duration: 0.39), value: showAudio)
+            .opacity(cm.showAudio ? 0 : 1)
+            .blur(radius: cm.showAudio ? 30 : 0)
+            .animation(.smooth(duration: 0.39), value: cm.showAudio)
             , alignment: .topLeading
         )
         .overlay(
             Group {
-                if showAudio {
+                if cm.showAudio {
                     AudioTimeline(pageModel: pageModel, gestureManager: gestureManager, dragState: dragState, selectionManager: selectionManager, frameSpacing: frameSpacing, selectedFrames: $selectedFrames, editStrength: $editStrength)
                         .offset(y: currentOffset)
                         .transition(.move(edge: .bottom))
                 }
             }
-            .opacity(!showAudio ? 0 : 1)
-            .blur(radius: !showAudio ? 30 : 0)
-            .animation(.smooth(duration: 0.39), value: showAudio)
+                .opacity(!cm.showAudio ? 0 : 1)
+            .blur(radius: !cm.showAudio ? 30 : 0)
+            .animation(.smooth(duration: 0.39), value: cm.showAudio)
             , alignment: .topLeading
         )
         .offset(y: gestureOffsetY)
@@ -82,18 +82,22 @@ struct ViewFinder: View {
                 .onChanged { value in
                     fakeOffsetY = (value.translation.height > 0 ? sqrt(value.translation.height) : -sqrt(-value.translation.height)) * 11
                     if fakeOffsetY < -120  {
-                        showAudio = true
+                        cm.showAudio = true
                         selectedFrames.removeAll()
                         editStrength = false
                         selectionManager.selectedSectionIndex = nil
                     }
 
                     if fakeOffsetY > 120 {
-                        showAudio = false
+                        cm.showAudio = false
                     }
+
+//                    if cm.showAudio = false && fakeOffsetY > 120 {
+//
+//                    }
                 }
         )
-        .onChange(of: showAudio) {
+        .onChange(of: cm.showAudio) {
             Haptics.shared.play(.light)
         }
         .animation(.smooth(duration: 0.39), value: gestureOffsetY != 0)
@@ -251,7 +255,7 @@ struct ViewFinder: View {
             Spacer()
             Button(action: { withAnimation(.smooth(duration: 0.3)) { editStrength = true } }) {
                 VStack(spacing: 2) {
-                    Text((showAudio ? "Volume" : "Strength").uppercased())
+                    Text((cm.showAudio ? "Volume" : "Strength").uppercased())
                         .font(.custom("SFCamera", size: UIConstants.subheadline))
 
                     Text("9")
@@ -306,23 +310,44 @@ struct ViewFinder: View {
     var moreControls: some View {
         HStack(alignment: .top) {
             Spacer()
-            VStack(spacing: 9) {
-                Text("Visibility".uppercased())
-                    .font(.custom("SFCamera", size: UIConstants.subheadline))
+            Button(action: { withAnimation(.smooth(duration: 0.3)) { cm.showEdits.toggle() } }) {
+                VStack(spacing: 9) {
+                    Text("Edits".uppercased())
+                        .font(.custom("SFCamera", size: UIConstants.subheadline))
 
-                Image(systemName: "eye")
-                    .font(.system(size: UIConstants.footnote))
-                    .frame(height: 14)
+                    Image(systemName: cm.showEdits ? "eye" : "eye.slash")
+                        .font(.system(size: UIConstants.footnote))
+                        .frame(height: 14)
+                }
+                .contentShape(Rectangle())
             }
+            .buttonStyle(DefaultButtonStyle())
             Spacer()
-            VStack(spacing: 9) {
-                Text("Grid".uppercased())
-                    .font(.custom("SFCamera", size: UIConstants.subheadline))
+            Button(action: { withAnimation(.smooth(duration: 0.3)) { cm.showGrid.toggle() } }) {
+                VStack(spacing: 9) {
+                    Text("Grid".uppercased())
+                        .font(.custom("SFCamera", size: UIConstants.subheadline))
 
-                Image(systemName: "squareshape.split.3x3")
-                    .font(.system(size: UIConstants.subheadline))
-                    .frame(height: 15)
+                    Image(systemName: cm.showGrid ? "squareshape.split.3x3" : "square")
+                        .font(.system(size: UIConstants.subheadline))
+                        .frame(height: 15)
+                }
+                .contentShape(Rectangle())
             }
+            .buttonStyle(DefaultButtonStyle())
+            Spacer()
+            Button(action: { withAnimation(.smooth(duration: 0.3)) { cm.showAudio.toggle() } }) {
+                VStack(spacing: 9) {
+                    Text((cm.showAudio ? "Audio" : "Video").uppercased())
+                        .font(.custom("SFCamera", size: UIConstants.subheadline))
+
+                    Image(systemName: cm.showAudio ? "music.note" : "play.rectangle")
+                        .font(.system(size: UIConstants.footnote))
+                        .frame(height: 14)
+                }
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(DefaultButtonStyle())
             Spacer()
         }
         .foregroundColor(.white)
@@ -378,7 +403,7 @@ struct ViewFinder: View {
         }
         .overlay(
             Button(action: { withAnimation(.smooth(duration: 0.3)) { editStrength = false } }) {
-                Text((showAudio ? "Volume" : "Strength").uppercased())
+                Text((cm.showAudio ? "Volume" : "Strength").uppercased())
                     .font(.custom("SFCamera", size: UIConstants.subheadline))
                     .foregroundColor(scrollManager.positionID == 0 ? .white : .yellow)
                     .offset(y: -8)
@@ -470,7 +495,7 @@ struct ViewFinder: View {
         selectionManager.selectedSectionIndex = nil
 
         withAnimation(.smooth(duration: 0.3)) { pageModel.showTip = false }
-        showAudio = false
+        cm.showAudio = false
     }
 
     func timeString(from offsetX: CGFloat) -> String {

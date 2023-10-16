@@ -22,6 +22,14 @@ class GestureManager: ObservableObject {
 }
 
 @Observable
+class ControlsManager: ObservableObject {
+    public var showEdits = true
+    public var showGrid = false
+    public var showAudio = false
+
+}
+
+@Observable
 class DragState: ObservableObject {
     public var isDragging: Bool = false
 }
