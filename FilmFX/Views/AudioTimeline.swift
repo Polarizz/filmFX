@@ -2,7 +2,7 @@
 //  AudioTimeline.swift
 //  FilmFX
 //
-//  Created by Paul Wong on 10/14/23.
+//  Created by Polarizz on 10/14/23.
 //
 
 import SwiftUI

@@ -2,7 +2,7 @@
 //  ScrollViewWrapper.swift
 //  FilmFX
 //
-//  Created by Paul Wong on 10/13/23.
+//  Created by Polarizz on 10/13/23.
 //
 
 import SwiftUI

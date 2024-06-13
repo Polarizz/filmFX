@@ -2,7 +2,7 @@
 //  ZoomAndPanView.swift
 //  FilmFX
 //
-//  Created by Paul Wong on 10/12/23.
+//  Created by Polarizz on 10/12/23.
 //
 
 import SwiftUI

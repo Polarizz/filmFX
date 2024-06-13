@@ -2,7 +2,7 @@
 //  ViewFinder.swift
 //  FilmFX
 //
-//  Created by Paul Wong on 10/11/23.
+//  Created by Polarizz on 10/11/23.
 //
 
 import SwiftUI
@@ -91,10 +91,6 @@ struct ViewFinder: View {
                     if fakeOffsetY > 120 {
                         cm.showAudio = false
                     }
-
-//                    if cm.showAudio = false && fakeOffsetY > 120 {
-//
-//                    }
                 }
         )
         .onChange(of: cm.showAudio) {
