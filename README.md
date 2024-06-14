@@ -1,5 +1,5 @@
 <p align="center">
-  <img width="100" src="https://gist.github.com/assets/43870235/b1408bb8-2fe5-4e5e-bb01-97bc46620768">
+  <img width="100" src="https://github.com/Polarizz/filmFX/assets/43870235/6ef1bc6d-e683-458d-aa7d-79297e9fb62f">
 </p>
 
 # filmFX
